@@ -27,3 +27,15 @@ ng generate component login
 ```bash
 ng generate component signup
 ```
+
+6. Create Chat Component
+
+```bash
+ng generate component chat
+```
+
+7. Create Explore Component
+
+```bash
+ng generate component explore
+```
