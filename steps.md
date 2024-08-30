@@ -15,3 +15,9 @@ ng add @ng-bootstrap/ng-bootstrap
 ```bash
 npm init
 ```
+
+4. Create Login Component
+
+```bash
+ng generate component login
+```
