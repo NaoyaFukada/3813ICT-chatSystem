@@ -39,3 +39,9 @@ ng generate component chat
 ```bash
 ng generate component explore
 ```
+
+8. Create Profile Component
+
+```bash
+ng generate component profile
+```
