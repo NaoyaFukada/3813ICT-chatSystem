@@ -1,5 +1,6 @@
 <div
   class="container py-5 d-flex justify-content-center align-items-center p-0"
+  (click)="closeContextMenu($event)"
 >
   <div
     class="card text-white bg-dark"
@@ -22,13 +23,31 @@
         </h5>
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active text-white" href="#">Group 1</a>
+            <a
+              class="nav-link active text-white"
+              href="#"
+              (click)="openChannels('group1')"
+              (contextmenu)="openContextMenu($event, 'Group 1')"
+              >Group 1</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Group 2</a>
+            <a
+              class="nav-link text-white"
+              href="#"
+              (click)="openChannels('group2')"
+              (contextmenu)="openContextMenu($event, 'Group 2')"
+              >Group 2</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Group 3</a>
+            <a
+              class="nav-link text-white"
+              href="#"
+              (click)="openChannels('group3')"
+              (contextmenu)="openContextMenu($event, 'Group 3')"
+              >Group 3</a
+            >
           </li>
         </ul>
       </div>
@@ -89,5 +108,18 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Custom context menu for leaving group -->
+  <div
+    id="context-menu"
+    class="custom-context-menu"
+    [style.display]="contextMenuVisible ? 'block' : 'none'"
+    [style.top.px]="contextMenuPosition.y"
+    [style.left.px]="contextMenuPosition.x"
+  >
+    <ul>
+      <li (click)="leaveGroup($event)">Leave Group</li>
+    </ul>
   </div>
 </div>
