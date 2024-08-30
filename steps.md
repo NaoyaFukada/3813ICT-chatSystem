@@ -21,3 +21,9 @@ npm init
 ```bash
 ng generate component login
 ```
+
+5. Create Signup Component
+
+```bash
+ng generate component signup
+```

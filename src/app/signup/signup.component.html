@@ -5,9 +5,9 @@
         <div class="card bg-dark text-white" style="border-radius: 1rem">
           <div class="card-body p-5 text-center">
             <form class="mb-md-5 mt-md-4 pb-5">
-              <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+              <h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
               <p class="text-white-50 mb-5">
-                Please enter your username and password!
+                Please create a unique username and a secure password!
               </p>
 
               <div class="form-floating mb-3">
@@ -24,7 +24,6 @@
                 >
               </div>
 
-              <!-- Password Input with Floating Label -->
               <div class="form-floating mb-4">
                 <input
                   type="password"
@@ -37,15 +36,27 @@
                 >
               </div>
 
+              <div class="form-floating mb-4">
+                <input
+                  type="password"
+                  class="form-control form-control-lg bg-dark text-white"
+                  id="floatingInputPassword"
+                  placeholder="Password"
+                />
+                <label for="floatingInputPassword" class="text-white"
+                  >Confirm Password</label
+                >
+              </div>
+
               <button class="btn btn-outline-light btn-lg px-5" type="submit">
-                Login
+                Signup
               </button>
             </form>
 
             <div>
               <p class="mb-0">
-                Don't have an account?
-                <a routerLink="/signup" class="text-white-50 fw-bold">SignUp</a>
+                Already have an account?
+                <a href="/login" class="text-white-50 fw-bold">LogIn</a>
               </p>
             </div>
           </div>
