@@ -1,0 +1,93 @@
+<div
+  class="container py-5 d-flex justify-content-center align-items-center p-0"
+>
+  <div
+    class="card text-white bg-dark"
+    style="
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 1200px;
+      border: none;
+      overflow: hidden;
+    "
+  >
+    <div class="card-body d-flex p-0" style="height: 80vh">
+      <!-- Sidebar for Groups -->
+      <div class="bg-dark text-white p-3 pt-0 overflow-auto" id="group-sidebar">
+        <h5
+          class="text-center bg-dark pt-3"
+          style="position: sticky; top: 0; z-index: 1000"
+        >
+          Groups
+        </h5>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="#">Group 1</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#">Group 2</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#">Group 3</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Sidebar for Channels -->
+      <div
+        class="bg-secondary text-white p-3 pt-0 overflow-auto"
+        id="channel-sidebar"
+      >
+        <h5
+          class="text-center pt-3 bg-secondary"
+          style="position: sticky; top: 0; z-index: 1000"
+        >
+          Channels
+        </h5>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active text-white" href="#"># general</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#"># random</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#"># help</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Main Chat Area -->
+      <div
+        class="flex-grow-1 d-flex flex-column bg-light text-dark"
+        id="chat-area"
+      >
+        <div class="p-3 border-bottom bg-dark text-white" id="chat-header">
+          <h5># general</h5>
+        </div>
+        <div class="flex-grow-1 p-3 overflow-auto" id="chat-content">
+          <!-- Chat messages will go here -->
+          <div class="message"><strong>User1:</strong> Hello everyone!</div>
+          <div class="message"><strong>User2:</strong> Hi! How are you?</div>
+        </div>
+        <div class="p-3 border-top bg-dark" id="chat-input">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control rounded-pill"
+              placeholder="Type a message..."
+              style="border-right: none"
+            />
+            <button
+              class="btn btn-primary rounded-pill"
+              type="button"
+              style="border-top-left-radius: 0; border-bottom-left-radius: 0"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

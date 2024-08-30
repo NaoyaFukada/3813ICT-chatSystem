@@ -1,0 +1,56 @@
+/* Styling for the group sidebar */
+#group-sidebar {
+  width: 15%;
+  background-color: #2c2f33;
+  border-right: 1px solid #444;
+}
+
+/* Styling for the channel sidebar */
+#channel-sidebar {
+  width: 20%;
+  background-color: #23272a;
+  border-right: 1px solid #444;
+}
+
+/* Styling for the chat area */
+#chat-area {
+  width: 65%;
+}
+
+/* Additional message styling */
+.message {
+  margin-bottom: 10px;
+}
+
+/* Input and Send Button Styling */
+#chat-input input {
+  border: none;
+  padding: 10px 15px;
+}
+
+#chat-input .input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#chat-input .form-control:focus {
+  box-shadow: none;
+}
+
+#chat-input .btn-primary {
+  padding: 10px 20px;
+  border: none;
+}
+
+/* Hover and Active State Styling */
+.nav-link {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background-color: #495057;
+  color: #fff;
+  border-radius: 4px;
+}
