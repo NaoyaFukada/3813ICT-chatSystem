@@ -1,0 +1,150 @@
+<div>
+  <!-- Search Bar -->
+  <div *ngIf="!selectedGroup" class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control bg-dark text-white"
+      placeholder="Search groups..."
+      aria-label="Search groups"
+      (input)="updateSearchQuery($event)"
+    />
+  </div>
+
+  <!-- Group List -->
+  <ul *ngIf="!selectedGroup" class="list-group">
+    <li
+      *ngFor="let group of filteredGroups"
+      class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-white mb-3"
+    >
+      <div>
+        <h5>{{ group.name }}</h5>
+        <small
+          >Channels: {{ group.channels.length }} | Users:
+          {{ group.users.length }}</small
+        >
+      </div>
+      <div>
+        <button
+          class="btn btn-outline-light btn-sm"
+          (click)="selectGroup(group)"
+        >
+          Manage Group
+        </button>
+        <button
+          class="btn btn-outline-danger btn-sm ms-2"
+          (click)="deleteGroup(group)"
+        >
+          Delete
+        </button>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Add New Group Button -->
+  <div *ngIf="!selectedGroup" class="mt-4">
+    <button class="btn btn-success w-100" (click)="addGroup()">
+      Add New Group
+    </button>
+  </div>
+
+  <!-- Group Detail Section -->
+  <div *ngIf="selectedGroup" id="group-management-section">
+    <!-- Navigation Tabs -->
+    <div class="d-flex align-items-center justify-content-between mt-0">
+      <div class="nav nav-tabs-sub mt-0">
+        <a
+          class="nav-item nav-link active nav-btn"
+          (click)="selectChannelManagement()"
+          [class.active]="selectedTab === 'channel_management'"
+        >
+          {{ selectedGroup.name }} Channel Management
+        </a>
+        <a
+          class="nav-item nav-link nav-btn"
+          (click)="selectUserManagement()"
+          [class.active]="selectedTab === 'user_management'"
+        >
+          {{ selectedGroup.name }} User Management
+        </a>
+      </div>
+    </div>
+
+    <div class="tab-content mt-3">
+      <!-- Channel Management Tab -->
+      <div *ngIf="selectedTab === 'channel_management'">
+        <div *ngFor="let channel of selectedGroup.channels" class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ channel.name }}</span>
+            <div>
+              <button
+                class="btn btn-outline-secondary btn-sm me-2"
+                (click)="editChannel(channel)"
+              >
+                Edit
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm"
+                (click)="deleteChannel(selectedGroup, channel)"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-success" (click)="addChannel(selectedGroup)">
+          Add New Channel
+        </button>
+      </div>
+
+      <!-- User Management Tab -->
+      <div *ngIf="selectedTab === 'user_management'">
+        <div *ngFor="let user of selectedGroup.users" class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ user.username }}</span>
+            <div>
+              <button
+                class="btn btn-outline-warning btn-sm me-2"
+                (click)="banUserFromChannel(selectedGroup, user)"
+              >
+                Ban from Channel
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm me-2"
+                (click)="removeUserFromGroup(selectedGroup, user)"
+              >
+                Remove from Group
+              </button>
+              <button
+                class="btn btn-outline-light btn-sm"
+                (click)="reportToSuperAdmin(selectedGroup, user)"
+              >
+                Report
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="mt-4">Users Interested in Joining</h6>
+        <div *ngFor="let interest of selectedGroup.interests" class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ interest.username }}</span>
+            <div>
+              <button
+                class="btn btn-outline-success btn-sm me-2"
+                (click)="approveInterest(selectedGroup, interest)"
+              >
+                Approve
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm"
+                (click)="declineInterest(selectedGroup, interest)"
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

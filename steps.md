@@ -45,3 +45,15 @@ ng generate component explore
 ```bash
 ng generate component profile
 ```
+
+8. Create Admin Component
+
+```bash
+ng generate component admin
+```
+
+9. Create userManegement component
+
+```bash
+ng generate component userManegement
+```
