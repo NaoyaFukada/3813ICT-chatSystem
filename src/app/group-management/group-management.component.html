@@ -91,44 +91,27 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-success" (click)="addChannel(selectedGroup)">
+        <button
+          class="btn btn-success w-100"
+          (click)="addChannel(selectedGroup)"
+        >
           Add New Channel
         </button>
       </div>
 
       <!-- User Management Tab -->
       <div *ngIf="selectedTab === 'user_management'">
-        <div *ngFor="let user of selectedGroup.users" class="mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <span>{{ user.username }}</span>
-            <div>
-              <button
-                class="btn btn-outline-warning btn-sm me-2"
-                (click)="banUserFromChannel(selectedGroup, user)"
-              >
-                Ban from Channel
-              </button>
-              <button
-                class="btn btn-outline-danger btn-sm me-2"
-                (click)="removeUserFromGroup(selectedGroup, user)"
-              >
-                Remove from Group
-              </button>
-              <button
-                class="btn btn-outline-light btn-sm"
-                (click)="reportToSuperAdmin(selectedGroup, user)"
-              >
-                Report
-              </button>
+        <!-- Users Interested in Joining -->
+        <div class="interested-users-section p-0 mt-4 mb-3">
+          <div
+            *ngFor="let interest of selectedGroup.interests"
+            class="d-flex justify-content-between align-items-center mb-3 interest-user"
+          >
+            <div class="d-flex align-items-center">
+              <span>{{ interest.username }}</span>
+              <span class="badge badge-join ms-2">Wants to Join</span>
             </div>
-          </div>
-        </div>
-
-        <h6 class="mt-4">Users Interested in Joining</h6>
-        <div *ngFor="let interest of selectedGroup.interests" class="mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <span>{{ interest.username }}</span>
-            <div>
+            <div class="btn-container">
               <button
                 class="btn btn-outline-success btn-sm me-2"
                 (click)="approveInterest(selectedGroup, interest)"
@@ -142,6 +125,34 @@
                 Decline
               </button>
             </div>
+          </div>
+        </div>
+
+        <!-- Existing Users -->
+        <div
+          *ngFor="let user of selectedGroup.users"
+          class="d-flex justify-content-between align-items-center mb-3 user-member"
+        >
+          <span>{{ user.username }}</span>
+          <div class="btn-container">
+            <button
+              class="btn btn-outline-warning btn-sm me-2"
+              (click)="banUserFromChannel(selectedGroup, user)"
+            >
+              Ban from Channel
+            </button>
+            <button
+              class="btn btn-outline-danger btn-sm me-2"
+              (click)="removeUserFromGroup(selectedGroup, user)"
+            >
+              Remove from Group
+            </button>
+            <button
+              class="btn btn-outline-light btn-sm"
+              (click)="reportToSuperAdmin(selectedGroup, user)"
+            >
+              Report
+            </button>
           </div>
         </div>
       </div>
