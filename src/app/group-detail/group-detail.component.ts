@@ -1,63 +1,66 @@
 import { Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { GroupService } from '../services/group.service';
+import { NgClass } from '@angular/common';
+import { ChannelManagementComponent } from '../channel-management/channel-management.component';
+import { GroupUserManagementComponent } from '../group-user-management/group-user-management.component';
 
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [NgIf, NgFor],
+  imports: [
+    NgIf,
+    NgFor,
+    FormsModule,
+    NgClass,
+    ChannelManagementComponent,
+    GroupUserManagementComponent,
+  ],
   templateUrl: './group-detail.component.html',
   styleUrl: './group-detail.component.css',
 })
 export class GroupDetailComponent {
   @Input() selectedGroup: any; // Receive selectedGroup from parent component
-  selectedTab: string = 'channel_management'; // Default tab
 
+  selectedTab: string = 'channel_management'; // Default tab
+  newGroupName: string = ''; // Holds the new group name
+
+  constructor(private GroupService: GroupService) {}
+
+  reloadGroupData() {
+    // Fetch the latest selectedGroup data from the server
+    this.GroupService.getGroupById(this.selectedGroup.id).subscribe(
+      (updatedGroup) => {
+        this.selectedGroup = updatedGroup;
+        console.log(this.selectedGroup);
+      }
+    );
+  }
+
+  // Navigation Tab
   selectChannelManagement() {
     this.selectedTab = 'channel_management';
+    this.reloadGroupData();
   }
 
   selectUserManagement() {
     this.selectedTab = 'user_management';
+    this.reloadGroupData();
   }
 
-  editChannel(channel: any) {
-    // Placeholder function for editing a channel
-    console.log('Edit Channel', channel);
+  selectChangeGroupName() {
+    this.selectedTab = 'change_group_name';
+    this.newGroupName = this.selectedGroup.groupname; // Set the current group name in the input
+    this.reloadGroupData();
   }
 
-  deleteChannel(group: any, channel: any) {
-    // Placeholder function for deleting a channel within a group
-    console.log('Delete Channel', group, channel);
-  }
-
-  addChannel(group: any) {
-    // Placeholder function for adding a new channel within a group
-    console.log('Add New Channel', group);
-  }
-
-  approveInterest(group: any, interest: any) {
-    // Placeholder function for approving a user's interest in joining a group
-    console.log('Approve Interest', group, interest);
-  }
-
-  declineInterest(group: any, interest: any) {
-    // Placeholder function for declining a user's interest in joining a group
-    console.log('Decline Interest', group, interest);
-  }
-
-  banUserFromChannel(group: any, user: any) {
-    // Placeholder function for banning a user from a channel
-    console.log('Ban User from Channel', group, user);
-  }
-
-  removeUserFromGroup(group: any, user: any) {
-    // Placeholder function for removing a user from a group
-    console.log('Remove User from Group', group, user);
-  }
-
-  reportToSuperAdmin(group: any, user: any) {
-    // Placeholder function for reporting a user to the Super Admin
-    console.log('Report to Super Admin', group, user);
+  changeGroupName() {
+    if (this.newGroupName.trim()) {
+      this.selectedGroup.groupname = this.newGroupName.trim();
+      // Here you would call a service to update the group name in the backend if needed
+      console.log('Group name changed to:', this.selectedGroup.groupname);
+    }
   }
 }

@@ -83,3 +83,15 @@ ng generate component groupDetail
 ```bash
 ng generate service services/group
 ```
+
+14. Create channel management componennt
+
+```bash
+ng generate component channelManagement
+```
+
+15. Create Group user management component
+
+```bash
+ng generate component groupUserManagement
+```

@@ -3,6 +3,29 @@
     "id": "group-gsnwukea9n4",
     "groupname": "new-group",
     "adminId": "user-rv4uafl3dt",
+    "channels": [
+      "soccer2",
+      "soccer",
+      "rugby",
+      "basketball",
+      "volleyball",
+      "table tennis"
+    ],
+    "users": ["naoya", "nam"],
+    "pendingUsers": ["user-rw4uafl3dt"]
+  },
+  {
+    "id": "group-z818jq1ly1k",
+    "groupname": "find group",
+    "adminId": "user-rv4uafl3dt",
+    "channels": [],
+    "users": [],
+    "pendingUsers": []
+  },
+  {
+    "id": "group-fal1u3ij8io",
+    "groupname": "new group",
+    "adminId": "user-rv4uafl3dt",
     "channels": [],
     "users": [],
     "pendingUsers": []

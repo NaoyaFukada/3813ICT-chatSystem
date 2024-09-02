@@ -28,4 +28,31 @@ export class GroupService {
     const params = new HttpParams().set('adminId', adminId);
     return this.http.delete<void>(`${this.URL}/${id}`, { params });
   }
+
+  addChannel(groupId: string, channelName: string): Observable<Group> {
+    return this.http.post<Group>(`${this.URL}/${groupId}/channels`, {
+      channelName,
+    });
+  }
+
+  updateChannelName(
+    groupId: string,
+    oldChannelName: string,
+    newChannelName: string
+  ): Observable<Group> {
+    return this.http.put<Group>(
+      `${this.URL}/${groupId}/channels/${oldChannelName}`,
+      { newChannelName } // Sending the new channel name in the request body
+    );
+  }
+
+  deleteChannel(groupId: string, channelName: string): Observable<Group> {
+    return this.http.delete<Group>(
+      `${this.URL}/${groupId}/channels/${channelName}`
+    );
+  }
+
+  getGroupById(groupId: string): Observable<Group> {
+    return this.http.get<Group>(`${this.URL}/${groupId}`);
+  }
 }

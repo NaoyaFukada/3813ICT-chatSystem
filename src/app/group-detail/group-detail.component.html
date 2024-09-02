@@ -3,104 +3,57 @@
   <div class="d-flex align-items-center justify-content-between mt-0">
     <div class="nav nav-tabs-sub mt-0">
       <a
-        class="nav-item nav-link active nav-btn"
+        class="nav-item nav-link nav-btn"
         (click)="selectChannelManagement()"
         [class.active]="selectedTab === 'channel_management'"
       >
-        {{ selectedGroup.name }} Channel Management
+        {{ selectedGroup.groupname }} Channel Management
       </a>
       <a
         class="nav-item nav-link nav-btn"
         (click)="selectUserManagement()"
         [class.active]="selectedTab === 'user_management'"
       >
-        {{ selectedGroup.name }} User Management
+        {{ selectedGroup.groupname }} User Management
+      </a>
+      <a
+        class="nav-item nav-link nav-btn"
+        (click)="selectChangeGroupName()"
+        [class.active]="selectedTab === 'change_group_name'"
+      >
+        Change Group Name
       </a>
     </div>
   </div>
 
   <div class="tab-content mt-3">
     <!-- Channel Management Tab -->
-    <div *ngIf="selectedTab === 'channel_management'">
-      <div *ngFor="let channel of selectedGroup.channels" class="mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <span>{{ channel.name }}</span>
-          <div>
-            <button
-              class="btn btn-outline-secondary btn-sm me-2"
-              (click)="editChannel(channel)"
-            >
-              Edit
-            </button>
-            <button
-              class="btn btn-outline-danger btn-sm"
-              (click)="deleteChannel(selectedGroup, channel)"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-      <button class="btn btn-success w-100" (click)="addChannel(selectedGroup)">
-        Add New Channel
-      </button>
-    </div>
+    <app-channel-management
+      *ngIf="selectedTab === 'channel_management'"
+      [selectedGroup]="selectedGroup"
+    ></app-channel-management>
 
     <!-- User Management Tab -->
-    <div *ngIf="selectedTab === 'user_management'">
-      <!-- Users Interested in Joining -->
-      <div class="interested-users-section p-0 mt-4 mb-3">
-        <div
-          *ngFor="let interest of selectedGroup.interests"
-          class="d-flex justify-content-between align-items-center mb-3 interest-user"
-        >
-          <div class="d-flex align-items-center">
-            <span>{{ interest.username }}</span>
-            <span class="badge badge-join ms-2">Wants to Join</span>
-          </div>
-          <div class="btn-container">
-            <button
-              class="btn btn-outline-success btn-sm me-2"
-              (click)="approveInterest(selectedGroup, interest)"
-            >
-              Approve
-            </button>
-            <button
-              class="btn btn-outline-danger btn-sm"
-              (click)="declineInterest(selectedGroup, interest)"
-            >
-              Decline
-            </button>
-          </div>
-        </div>
-      </div>
+    <app-group-user-management
+      *ngIf="selectedTab === 'user_management'"
+      [selectedGroup]="selectedGroup"
+    ></app-group-user-management>
 
-      <!-- Existing Users -->
-      <div
-        *ngFor="let user of selectedGroup.users"
-        class="d-flex justify-content-between align-items-center mb-3 user-member"
-      >
-        <span>{{ user.username }}</span>
-        <div class="btn-container">
-          <button
-            class="btn btn-outline-warning btn-sm me-2"
-            (click)="banUserFromChannel(selectedGroup, user)"
-          >
-            Ban from Channel
-          </button>
-          <button
-            class="btn btn-outline-danger btn-sm me-2"
-            (click)="removeUserFromGroup(selectedGroup, user)"
-          >
-            Remove from Group
-          </button>
-          <button
-            class="btn btn-outline-light btn-sm"
-            (click)="reportToSuperAdmin(selectedGroup, user)"
-          >
-            Report
-          </button>
-        </div>
+    <!-- Change Group Name Tab -->
+    <div *ngIf="selectedTab === 'change_group_name'">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          class="form-control bg-transparent text-white border-none p-0"
+          placeholder="Enter new group name..."
+          [(ngModel)]="newGroupName"
+        />
+        <button
+          class="btn btn-outline-success btn-sm me-2"
+          (click)="changeGroupName()"
+        >
+          Save
+        </button>
       </div>
     </div>
   </div>
