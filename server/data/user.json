@@ -1,10 +1,19 @@
 [
   {
-    "id": 1,
+    "id": "user-rv4uafl3dt",
     "username": "super",
     "email": "super@gmail.com",
     "password": "123",
-    "roles": [""],
+    "roles": ["Super_Admin"],
+    "groups": [""],
+    "interest_groups": [""]
+  },
+  {
+    "id": "user-rw4uafl3dt",
+    "username": "naoya",
+    "email": "nao@gmail.com",
+    "password": "123",
+    "roles": ["Super_Admin"],
     "groups": [""],
     "interest_groups": [""]
   }

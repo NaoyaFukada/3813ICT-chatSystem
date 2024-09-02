@@ -2,7 +2,8 @@ const express = require("express"); // Import express.js
 const app = express(); // Create an instance of Express
 const PORT = 3000;
 var cors = require("cors");
-const { loadUsers, saveUsers } = require("./dataHandler");
+const { loadUsers, saveUsers } = require("./handler/userDataHandler");
+const { loadGroups, saveGroups } = require("./handler/groupDataHandler");
 
 // Parse URL-encoded bodies and JSON
 app.use(express.urlencoded({ extended: true }));
@@ -15,11 +16,13 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Load users from the JSON file when the server starts
+// Load data from json file
 let users = loadUsers();
+let groups = loadGroups();
 
 // Import and use routes
-require("./routes/login").route(app, users, saveUsers);
+require("./routes/login").route(app, users);
+require("./routes/group").route(app, groups, saveGroups);
 
 // Start the server
 app.listen(PORT, () => {

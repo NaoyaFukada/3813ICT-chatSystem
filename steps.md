@@ -71,3 +71,15 @@ ng generate component groupManegement
 ```bash
 ng generate service services/auth
 ```
+
+12. Create groupDetail
+
+```bash
+ng generate component groupDetail
+```
+
+13. Create group service
+
+```bash
+ng generate service services/group
+```

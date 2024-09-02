@@ -28,9 +28,19 @@ export class AuthService {
     }
   }
 
-  // You can add other methods like login, logout, etc.
   logout() {
     sessionStorage.removeItem('current_user');
     this.router.navigate(['/login']);
+  }
+
+  // Method to get the current user's information from session storage
+  getUserID(): string | null {
+    const user = sessionStorage.getItem('current_user');
+    return user ? JSON.parse(user).id : null;
+  }
+
+  // You can add other methods like login, logout, etc.
+  updateUserInfo(updatedUser: User) {
+    sessionStorage.setItem('current_user', JSON.stringify(updatedUser));
   }
 }
