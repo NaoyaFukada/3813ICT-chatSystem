@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "username": "super",
+    "email": "super@gmail.com",
+    "password": "123",
+    "roles": [""],
+    "groups": [""],
+    "interest_groups": [""]
+  }
+]

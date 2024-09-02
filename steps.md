@@ -57,3 +57,17 @@ ng generate component admin
 ```bash
 ng generate component userManegement
 ```
+
+9. Create groupManegement component
+
+```bash
+ng generate component groupManegement
+```
+
+10. Create user.model.ts
+
+11. Create auth service
+
+```bash
+ng generate service services/auth
+```
