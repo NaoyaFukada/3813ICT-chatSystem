@@ -39,9 +39,19 @@ export class GroupManagementComponent implements OnInit {
 
   // Load groups from the service
   loadGroups() {
-    this.GroupService.getGroups(this.current_user_id).subscribe((data) => {
-      this.groups = data;
-    });
+    if (this.AuthService.getUserRole() === 'Super Admin') {
+      // If the current user is a Super Admin, get all groups where adminId is either the user's ID or "super"
+      this.GroupService.getGroupsForSuperAdmin(this.current_user_id).subscribe(
+        (data) => {
+          this.groups = data;
+        }
+      );
+    } else {
+      // Otherwise, just get the groups where the current user is the admin
+      this.GroupService.getGroups(this.current_user_id).subscribe((data) => {
+        this.groups = data;
+      });
+    }
   }
 
   // Filtering the groups based on search input
@@ -91,6 +101,11 @@ export class GroupManagementComponent implements OnInit {
         this.loadGroups(); // Reload the group list after adding
         this.newGroupName = '';
         this.addingGroup = false;
+        const currentUser = this.AuthService.getUserInfo();
+        if (currentUser) {
+          currentUser.groups.push(group.id);
+          this.AuthService.updateUserInfo(currentUser);
+        }
       });
     }
   }

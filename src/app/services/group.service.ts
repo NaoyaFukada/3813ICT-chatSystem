@@ -20,6 +20,13 @@ export class GroupService {
     return this.http.get<Group[]>(this.URL, { params });
   }
 
+  // This method will retrieve all groups where the adminId is either the current user's ID or "super"
+  getGroupsForSuperAdmin(adminId: string): Observable<Group[]> {
+    let params = new HttpParams();
+    params = params.set('adminId', adminId).append('adminId', 'super');
+    return this.http.get<Group[]>(this.URL, { params });
+  }
+
   getGroupById(groupId: string): Observable<Group> {
     return this.http.get<Group>(`${this.URL}/${groupId}`);
   }
@@ -37,6 +44,10 @@ export class GroupService {
     return this.http.put<Group>(`${this.URL}/${groupId}/name`, {
       newGroupName,
     });
+  }
+
+  updateGroupAdminToSuper(groupId: string): Observable<void> {
+    return this.http.put<void>(`${this.URL}/${groupId}/admin-to-super`, {});
   }
 
   addChannel(

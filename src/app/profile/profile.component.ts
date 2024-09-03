@@ -103,20 +103,40 @@ export class ProfileComponent implements OnInit {
 
   leaveGroup(groupId: string) {
     if (confirm('Are you sure you want to leave this group?')) {
-      this.UserService.removeUserFromGroup(groupId, this.user.id).subscribe(
-        () => {
-          alert('You have left the group.');
-          this.groups = this.groups.filter((group) => group.id !== groupId);
-          this.user.groups = this.user.groups.filter(
-            (id: string) => id !== groupId
-          );
-          this.AuthService.updateUserInfo(this.user);
-        },
-        (error) => {
-          console.error('Error leaving group:', error);
-          alert('Failed to leave the group. Please try again.');
-        }
-      );
+      this.GroupService.getGroupById(groupId).subscribe((group) => {
+        const isAdmin = group.adminId === this.user.id;
+        console.log(isAdmin);
+
+        this.UserService.removeUserFromGroup(groupId, this.user.id).subscribe(
+          () => {
+            if (isAdmin) {
+              // Update group adminId to "super" on the server side
+              this.GroupService.updateGroupAdminToSuper(groupId).subscribe(
+                () => {
+                  console.log('Group adminId updated to "super".');
+                },
+                (error) => {
+                  console.error(
+                    'Error updating group adminId to "super":',
+                    error
+                  );
+                }
+              );
+            }
+
+            alert('You have left the group.');
+            this.groups = this.groups.filter((group) => group.id !== groupId);
+            this.user.groups = this.user.groups.filter(
+              (id: string) => id !== groupId
+            );
+            this.AuthService.updateUserInfo(this.user);
+          },
+          (error) => {
+            console.error('Error leaving group:', error);
+            alert('Failed to leave the group. Please try again.');
+          }
+        );
+      });
     }
   }
 

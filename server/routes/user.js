@@ -115,33 +115,6 @@ module.exports = {
       }
     });
 
-    // API route to remove a user from a group (leave group)
-    app.put("/api/groups/:id/leave", (req, res) => {
-      const groupId = req.params.id;
-      const userId = req.body.userId;
-
-      const group = groups.find((group) => group.id === groupId);
-      const user = users.find((user) => user.id === userId);
-
-      if (group && user) {
-        // Remove the user from the group's users array
-        group.users = group.users.filter((id) => id !== userId);
-
-        // Remove the group from the user's groups array
-        user.groups = user.groups.filter((id) => id !== groupId);
-
-        // Save the updated groups and users
-        saveGroups(groups);
-        saveUsers(users);
-
-        res
-          .status(200)
-          .json({ message: "User removed from group successfully" });
-      } else {
-        res.status(404).json({ message: "Group or user not found" });
-      }
-    });
-
     // API route to report a user to the Super Admin
     app.put("/api/groups/:id/report", (req, res) => {
       const groupId = req.params.id;

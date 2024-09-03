@@ -2,14 +2,15 @@ module.exports = {
   route: (app, users, groups, saveGroups, saveUsers) => {
     // API route to get all groups
     app.get("/api/groups", (req, res) => {
-      const adminId = req.query.adminId;
+      const adminIds = req.query.adminId ? [].concat(req.query.adminId) : null;
+
       let filteredGroups = groups;
 
-      if (adminId) {
-        filteredGroups = groups.filter((group) => group.adminId === adminId);
+      if (adminIds) {
+        filteredGroups = groups.filter((group) =>
+          adminIds.includes(group.adminId)
+        );
       }
-
-      console.log(filteredGroups);
 
       res.json(filteredGroups);
     });
@@ -48,13 +49,35 @@ module.exports = {
       res.status(201).json(newGroup);
     });
 
+    // API route to update group adminId to "super"
+    app.put("/api/groups/:id/admin-to-super", (req, res) => {
+      const groupId = req.params.id;
+
+      const group = groups.find((group) => group.id === groupId);
+
+      console.log(group);
+
+      if (group) {
+        group.adminId = "super";
+        saveGroups(groups);
+        res
+          .status(200)
+          .json({ message: 'Group adminId updated to "super" successfully' });
+      } else {
+        res.status(404).json({ message: "Group not found" });
+      }
+    });
+
     // API route to delete a group
     app.delete("/api/groups/:id", (req, res) => {
       const groupId = req.params.id;
       const adminId = req.query.adminId;
 
+      // Find the group by ID
       const groupIndex = groups.findIndex(
-        (group) => group.id === groupId && group.adminId === adminId
+        (group) =>
+          group.id === groupId &&
+          (group.adminId === adminId || group.adminId === "super")
       );
 
       if (groupIndex !== -1) {
