@@ -43,6 +43,12 @@ export class AdminComponent implements OnInit {
     } else {
       this.selectedSection = 'user_management';
     }
+
+    if (!this.role) {
+      // Redirect to the login page
+      this.router.navigate(['/login']);
+      alert('You need to be logged in to see this page');
+    }
   }
 
   selectSection(section: string) {

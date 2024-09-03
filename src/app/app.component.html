@@ -20,7 +20,7 @@
               >Chat</a
             >
           </li>
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="this.role != null">
             <a class="nav-link" routerLink="/explore" routerLinkActive="active"
               >Explore</a
             >

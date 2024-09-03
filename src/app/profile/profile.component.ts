@@ -4,6 +4,7 @@ import { NgFor } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { GroupService } from '../services/group.service';
 import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -26,7 +27,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private AuthService: AuthService,
     private GroupService: GroupService,
-    private UserService: UserService
+    private UserService: UserService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +49,11 @@ export class ProfileComponent implements OnInit {
           this.groups.push(group); // Add the group to the list
         });
       });
+    }
+    if (!this.user) {
+      // Redirect to the login page
+      this.router.navigate(['/login']);
+      alert('You need to be logged in to see this page');
     }
   }
 

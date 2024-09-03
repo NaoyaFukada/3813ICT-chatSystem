@@ -1,6 +1,5 @@
 <div
   class="container py-5 d-flex justify-content-center align-items-center p-0"
-  (click)="closeContextMenu($event)"
 >
   <div
     class="card text-white bg-dark"
@@ -22,31 +21,12 @@
           Groups
         </h5>
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <a
-              class="nav-link active text-white"
-              href="#"
-              (click)="openChannels('group1')"
-              (contextmenu)="openContextMenu($event, 'Group 1')"
-              >Group 1</a
-            >
-          </li>
-          <li class="nav-item">
+          <li class="nav-item" *ngFor="let group of groups">
             <a
               class="nav-link text-white"
-              href="#"
-              (click)="openChannels('group2')"
-              (contextmenu)="openContextMenu($event, 'Group 2')"
-              >Group 2</a
-            >
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link text-white"
-              href="#"
-              (click)="openChannels('group3')"
-              (contextmenu)="openContextMenu($event, 'Group 3')"
-              >Group 3</a
+              style="cursor: pointer"
+              (click)="selectGroup(group.id)"
+              >{{ group.groupname }}</a
             >
           </li>
         </ul>
@@ -64,14 +44,13 @@
           Channels
         </h5>
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active text-white" href="#"># general</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="#"># random</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="#"># help</a>
+          <li class="nav-item" *ngFor="let channel of channels">
+            <a
+              class="nav-link text-white"
+              style="cursor: pointer"
+              (click)="selectChannel(channel.name)"
+              >{{ channel.name }}</a
+            >
           </li>
         </ul>
       </div>
@@ -82,7 +61,10 @@
         id="chat-area"
       >
         <div class="p-3 border-bottom bg-dark text-white" id="chat-header">
-          <h5># general</h5>
+          <h5>
+            {{ selectedGroup?.groupname || "Select a group" }}
+            {{ selectedChannel ? " - " + selectedChannel : "" }}
+          </h5>
         </div>
         <div class="flex-grow-1 p-3 overflow-auto" id="chat-content">
           <!-- Chat messages will go here -->
@@ -108,18 +90,5 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Custom context menu for leaving group -->
-  <div
-    id="context-menu"
-    class="custom-context-menu"
-    [style.display]="contextMenuVisible ? 'block' : 'none'"
-    [style.top.px]="contextMenuPosition.y"
-    [style.left.px]="contextMenuPosition.x"
-  >
-    <ul>
-      <li (click)="leaveGroup($event)">Leave Group</li>
-    </ul>
   </div>
 </div>

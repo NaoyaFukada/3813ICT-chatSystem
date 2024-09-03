@@ -3,6 +3,7 @@ import { GroupService } from '../services/group.service';
 import { AuthService } from '../services/auth.service';
 import { Group } from '../models/group.model';
 import { NgFor, NgIf } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-explore',
@@ -17,12 +18,18 @@ export class ExploreComponent implements OnInit {
 
   constructor(
     private GroupService: GroupService,
-    private AuthService: AuthService
+    private AuthService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.AuthService.getUserInfo();
     this.loadGroups();
+    if (!this.currentUser) {
+      // Redirect to the login page
+      this.router.navigate(['/login']);
+      alert('You need to be logged in to see this page');
+    }
   }
 
   loadGroups() {
