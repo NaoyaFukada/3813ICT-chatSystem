@@ -20,12 +20,8 @@
         "banned_users": []
       }
     ],
-    "users": [
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [
-      "user-rw4uafl3dt"
-    ],
+    "users": ["user-rv4uafl3dt"],
+    "pendingUsers": ["user-rw4uafl3dt"],
     "reported_users": []
   },
   {
@@ -44,9 +40,7 @@
         "banned_users": []
       }
     ],
-    "users": [
-      "user-rw4uafl3dt"
-    ],
+    "users": ["user-rw4uafl3dt"],
     "pendingUsers": [],
     "reported_users": []
   }

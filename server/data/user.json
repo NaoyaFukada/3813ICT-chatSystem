@@ -4,12 +4,8 @@
     "username": "super",
     "email": "super@gmail.com",
     "password": "123",
-    "roles": [
-      "Super Admin"
-    ],
-    "groups": [
-      "group-gsnwukea9n4"
-    ],
+    "roles": ["Super Admin"],
+    "groups": ["group-gsnwukea9n4"],
     "interest_groups": [],
     "banned_channels": [],
     "reported_in_groups": []
@@ -19,15 +15,9 @@
     "username": "naoya",
     "email": "nao@gmail.com",
     "password": "123",
-    "roles": [
-      "Group Admin"
-    ],
-    "groups": [
-      "group-q2xnwe91y3"
-    ],
-    "interest_groups": [
-      "group-gsnwukea9n4"
-    ],
+    "roles": ["Group Admin"],
+    "groups": ["group-q2xnwe91y3"],
+    "interest_groups": ["group-gsnwukea9n4"],
     "banned_channels": [],
     "reported_in_groups": []
   }

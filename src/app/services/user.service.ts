@@ -45,6 +45,12 @@ export class UserService {
     });
   }
 
+  leaveGroup(groupId: string, userId: string): Observable<void> {
+    return this.http.put<void>(`${this.URL}/groups/${groupId}/leave`, {
+      userId,
+    });
+  }
+
   reportUserToSuperAdmin(groupId: string, userId: string): Observable<Group> {
     return this.http.put<Group>(`${this.URL}/groups/${groupId}/report`, {
       userId,
@@ -55,6 +61,13 @@ export class UserService {
     return this.http.put<User>(`${this.URL}/users/${userId}/role`, {
       role: newRole,
     });
+  }
+
+  updateUserProfile(
+    userId: string,
+    updatedInfo: { username: string; email: string }
+  ): Observable<User> {
+    return this.http.put<User>(`${this.URL}/users/${userId}`, updatedInfo);
   }
 
   deleteUser(userId: string): Observable<void> {

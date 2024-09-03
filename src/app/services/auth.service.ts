@@ -33,6 +33,11 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  getUserInfo(): any | null {
+    const user = sessionStorage.getItem('current_user');
+    return user ? JSON.parse(user) : null;
+  }
+
   // Method to get the current user's information from session storage
   getUserID(): string | null {
     const user = sessionStorage.getItem('current_user');

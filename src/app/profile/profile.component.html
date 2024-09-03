@@ -69,8 +69,12 @@
             *ngFor="let group of groups"
             class="list-group-item bg-secondary text-white d-flex justify-content-between align-items-center"
           >
-            {{ group.name }}
-            <button class="btn btn-outline-light btn-sm" type="button">
+            {{ group.groupname }}
+            <button
+              class="btn btn-outline-light btn-sm"
+              type="button"
+              (click)="leaveGroup(group.id)"
+            >
               Leave
             </button>
           </li>
