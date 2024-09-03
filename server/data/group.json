@@ -45,7 +45,8 @@
       }
     ],
     "users": [
-      "user-rw4uafl3dt"
+      "user-rw4uafl3dt",
+      "user-rv4uafl3dt"
     ],
     "pendingUsers": [],
     "reported_users": []
@@ -72,7 +73,9 @@
         "banned_users": []
       }
     ],
-    "users": [],
+    "users": [
+      "user-rv4uafl3dt"
+    ],
     "pendingUsers": [],
     "reported_users": []
   }

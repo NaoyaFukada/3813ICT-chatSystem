@@ -185,5 +185,34 @@ module.exports = {
         res.status(404).json({ message: "Group not found" });
       }
     });
+
+    // API route to register interest in a group
+    app.put("/api/groups/:id/register-interest", (req, res) => {
+      const groupId = req.params.id;
+      const userId = req.body.userId;
+
+      const group = groups.find((group) => group.id === groupId);
+      const user = users.find((user) => user.id === userId);
+
+      if (group && user) {
+        // Add user to the group's pendingUsers list if not already added
+        if (!group.pendingUsers.includes(userId)) {
+          group.pendingUsers.push(userId);
+        }
+
+        // Add group to the user's interest_groups list if not already added
+        if (!user.interest_groups.includes(groupId)) {
+          user.interest_groups.push(groupId);
+        }
+
+        // Save the updated groups and users lists to their respective JSON files
+        saveGroups(groups);
+        saveUsers(users);
+
+        res.status(200).json({ message: "Interest registered successfully" });
+      } else {
+        res.status(404).json({ message: "Group or user not found" });
+      }
+    });
   },
 };

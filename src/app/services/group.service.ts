@@ -35,6 +35,13 @@ export class GroupService {
     return this.http.post<Group>(this.URL, group);
   }
 
+  // Method to register interest in a group
+  registerInterest(groupId: string, userId: string): Observable<any> {
+    return this.http.put(`${this.URL}/${groupId}/register-interest`, {
+      userId,
+    });
+  }
+
   deleteGroup(id: string, adminId: string): Observable<void> {
     const params = new HttpParams().set('adminId', adminId);
     return this.http.delete<void>(`${this.URL}/${id}`, { params });
