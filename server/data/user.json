@@ -10,7 +10,6 @@
     "groups": [
       "group-gsnwukea9n4",
       "group-d7bq7ig4iie",
-      "group-npo01d78jj",
       "group-q2xnwe91y3"
     ],
     "interest_groups": [],
@@ -31,6 +30,32 @@
     "interest_groups": [
       "group-gsnwukea9n4"
     ],
+    "banned_channels": [],
+    "reported_in_groups": []
+  },
+  {
+    "id": "user-x58f4yhqtzm",
+    "username": "taro",
+    "email": "taro@gmail.com",
+    "password": "123",
+    "roles": [
+      "Group Admin"
+    ],
+    "groups": [],
+    "interest_groups": [],
+    "banned_channels": [],
+    "reported_in_groups": []
+  },
+  {
+    "id": "user-hxs8wxj04ui",
+    "username": "jam",
+    "email": "",
+    "password": "123",
+    "roles": [
+      "Chat User"
+    ],
+    "groups": [],
+    "interest_groups": [],
     "banned_channels": [],
     "reported_in_groups": []
   }

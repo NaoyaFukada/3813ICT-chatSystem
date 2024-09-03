@@ -229,5 +229,30 @@ module.exports = {
         res.status(404).json({ message: "User not found" });
       }
     });
+
+    // API route to add a new user
+    app.post("/api/users", (req, res) => {
+      const newUser = req.body;
+
+      // Check if the username is already taken
+      const existingUser = users.find(
+        (user) => user.username === newUser.username
+      );
+      if (existingUser) {
+        return res.status(400).json({
+          message: "Username already exists. Please choose another one.",
+        });
+      }
+
+      // Add the new user to the users array
+      users.push(newUser);
+
+      // Save the updated users array
+      saveUsers(users);
+
+      console.log(`New user created: ${newUser.username}`);
+
+      res.status(201).json(newUser);
+    });
   },
 };

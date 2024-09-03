@@ -61,22 +61,5 @@
     ],
     "pendingUsers": [],
     "reported_users": []
-  },
-  {
-    "id": "group-npo01d78jj",
-    "groupname": "ill delete this later 2",
-    "adminId": "super",
-    "channels": [
-      {
-        "id": "channel-4ku8i9p0vhs",
-        "name": "fantastic",
-        "banned_users": []
-      }
-    ],
-    "users": [
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [],
-    "reported_users": []
   }
 ]
