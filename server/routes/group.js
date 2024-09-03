@@ -1,5 +1,5 @@
 module.exports = {
-  route: (app, groups, saveGroups) => {
+  route: (app, users, groups, saveGroups, saveUsers) => {
     // API route to get all groups
     app.get("/api/groups", (req, res) => {
       const adminId = req.query.adminId;
@@ -30,9 +30,21 @@ module.exports = {
     app.post("/api/groups", (req, res) => {
       const newGroup = req.body;
       console.log(newGroup);
+
+      // Add the new group to the groups list
       groups.push(newGroup);
-      // Save the new group list to JSON file
+
+      // Find the admin in the users list and update their groups array
+      const adminUser = users.find((user) => user.id === newGroup.adminId);
+      if (adminUser) {
+        adminUser.groups.push(newGroup.id);
+      }
+
+      // Save the updated groups and users lists to their respective JSON files
       saveGroups(groups);
+      saveUsers(users);
+
+      // Respond with the newly created group
       res.status(201).json(newGroup);
     });
 
@@ -46,8 +58,20 @@ module.exports = {
       );
 
       if (groupIndex !== -1) {
+        // Remove the group from the groups array
         groups.splice(groupIndex, 1);
-        saveGroups(groups); // Save the updated group list to JSON file
+
+        // Find the admin in the users list and remove the group from their groups array
+        const adminUser = users.find((user) => user.id === adminId);
+        if (adminUser) {
+          adminUser.groups = adminUser.groups.filter((id) => id !== groupId);
+        }
+
+        // Save the updated groups and users lists to their respective JSON files
+        saveGroups(groups);
+        saveUsers(users);
+
+        // Send a no-content response
         res.status(204).send();
       } else {
         res.status(403).json({
@@ -56,17 +80,32 @@ module.exports = {
       }
     });
 
-    // API route to add a new channel to a specific group
-    app.post("/api/groups/:id/channels", (req, res) => {
+    // API route to update a group name
+    app.put("/api/groups/:id/name", (req, res) => {
       const groupId = req.params.id;
-      const { channelName } = req.body;
-      console.log(channelName);
+      const { newGroupName } = req.body;
 
       const group = groups.find((group) => group.id === groupId);
 
       if (group) {
-        // Add the new channel to the group's channels array
-        group.channels.push(channelName);
+        group.groupname = newGroupName; // Update the group name
+        saveGroups(groups); // Save the updated group list to JSON file
+        res.status(200).json(group);
+      } else {
+        res.status(404).json({ message: "Group not found" });
+      }
+    });
+
+    // API route to add a new channel to a specific group
+    app.post("/api/groups/:id/channels", (req, res) => {
+      const groupId = req.params.id;
+      const { id, name, banned_users } = req.body; // Destructure id, name, and banned_users from the request body
+
+      const group = groups.find((group) => group.id === groupId);
+
+      if (group) {
+        // Add the new channel with banned_users to the group's channels array
+        group.channels.push({ id, name, banned_users });
         saveGroups(groups); // Save the updated group list to JSON file
         res.status(201).json(group);
       } else {
@@ -75,21 +114,21 @@ module.exports = {
     });
 
     // API route to update a channel name in a specific group
-    app.put("/api/groups/:id/channels/:channelName", (req, res) => {
+    app.put("/api/groups/:id/channels/:channelId", (req, res) => {
       const groupId = req.params.id;
-      const oldChannelName = req.params.channelName;
+      const channelId = req.params.channelId;
       const { newChannelName } = req.body;
 
       const group = groups.find((group) => group.id === groupId);
 
       if (group) {
         const channelIndex = group.channels.findIndex(
-          (channel) => channel === oldChannelName
+          (channel) => channel.id === channelId
         );
 
         if (channelIndex !== -1) {
           // Update the channel name
-          group.channels[channelIndex] = newChannelName;
+          group.channels[channelIndex].name = newChannelName;
           saveGroups(groups); // Save the updated group list to JSON file
           res.status(200).json(group);
         } else {
@@ -101,21 +140,21 @@ module.exports = {
     });
 
     // API route to delete a channel from a specific group
-    app.delete("/api/groups/:id/channels/:channelName", (req, res) => {
+    app.delete("/api/groups/:id/channels/:channelId", (req, res) => {
       const groupId = req.params.id;
-      const channelName = req.params.channelName;
+      const channelId = req.params.channelId;
 
       const group = groups.find((group) => group.id === groupId);
 
       if (group) {
         const channelIndex = group.channels.findIndex(
-          (channel) => channel === channelName
+          (channel) => channel.id === channelId
         );
 
         if (channelIndex !== -1) {
-          group.channels.splice(channelIndex, 1);
-          saveGroups(groups);
-          res.status(200).json(group);
+          group.channels.splice(channelIndex, 1); // Remove the channel from the group's channels array
+          saveGroups(groups); // Save the updated group list to the JSON file
+          res.status(200).json(group); // Return the updated group
         } else {
           res.status(404).json({ message: "Channel not found" });
         }

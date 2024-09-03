@@ -6,8 +6,8 @@
     <input
       type="text"
       class="form-control bg-transparent text-white border-none p-0"
-      [(ngModel)]="editingChannelNames[i]"
-      name="editingChannelNames[i]"
+      [(ngModel)]="editingChannelNames[i].name"
+      name="editingChannelNames[i].name"
       [readonly]="!isEditing[i]"
       [ngClass]="{ editable: isEditing[i] }"
       placeholder="Channel name"

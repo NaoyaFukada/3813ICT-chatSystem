@@ -3,6 +3,7 @@ import { Router, RouterOutlet, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,11 @@ export class LoginComponent implements OnInit {
   loginData = { username: '', password: '' };
   errorMessage: string = '';
 
-  constructor(private router: Router, private AuthService: AuthService) {}
+  constructor(
+    private router: Router,
+    private AuthService: AuthService,
+    private appComponent: AppComponent
+  ) {}
 
   ngOnInit(): void {
     if (this.AuthService.isLoggedIn()) {
@@ -31,6 +36,7 @@ export class LoginComponent implements OnInit {
         if (data.userInfo) {
           sessionStorage.setItem('current_user', JSON.stringify(data.userInfo));
           console.log(data.userInfo);
+          this.appComponent.updateRole();
           this.router.navigate(['/chat']);
         }
       },

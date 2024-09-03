@@ -22,7 +22,8 @@ let groups = loadGroups();
 
 // Import and use routes
 require("./routes/login").route(app, users);
-require("./routes/group").route(app, groups, saveGroups);
+require("./routes/group").route(app, users, groups, saveGroups, saveUsers);
+require("./routes/user").route(app, users, groups, saveGroups, saveUsers);
 
 // Start the server
 app.listen(PORT, () => {

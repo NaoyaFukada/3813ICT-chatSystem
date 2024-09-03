@@ -59,8 +59,18 @@ export class GroupDetailComponent {
   changeGroupName() {
     if (this.newGroupName.trim()) {
       this.selectedGroup.groupname = this.newGroupName.trim();
-      // Here you would call a service to update the group name in the backend if needed
-      console.log('Group name changed to:', this.selectedGroup.groupname);
+      this.GroupService.updateGroupName(
+        this.selectedGroup.id,
+        this.newGroupName.trim()
+      ).subscribe(
+        (updatedGroup) => {
+          console.log('Group name changed to:', updatedGroup.groupname);
+          this.selectedGroup = updatedGroup;
+        },
+        (error) => {
+          console.error('Error updating group name:', error);
+        }
+      );
     }
   }
 }

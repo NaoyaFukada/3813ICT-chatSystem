@@ -95,3 +95,21 @@ ng generate component channelManagement
 ```bash
 ng generate component groupUserManagement
 ```
+
+16. Create user service
+
+```bash
+ng generate service services/user
+```
+
+<!-- 17. Import jQuery
+
+```bash
+npm i --save-dev @types/jquery
+``` -->
+
+17. Import Bootstrap
+
+```bash
+npm i --save-dev @types/bootstrap
+```

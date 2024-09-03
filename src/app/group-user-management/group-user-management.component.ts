@@ -1,8 +1,8 @@
-import { Component, Input, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '../services/group.service';
+import { UserService } from '../services/user.service';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -10,30 +10,165 @@ import { NgClass } from '@angular/common';
   standalone: true,
   imports: [NgIf, NgFor, FormsModule, NgClass],
   templateUrl: './group-user-management.component.html',
-  styleUrl: './group-user-management.component.css',
+  styleUrls: ['./group-user-management.component.css'],
 })
-export class GroupUserManagementComponent {
+export class GroupUserManagementComponent implements OnInit {
   @Input() selectedGroup: any; // Receive selectedGroup from parent component
 
-  constructor(private GroupService: GroupService) {}
+  users: any[] = [];
+  interestedUsers: any[] = [];
+  selectedUser: any; // The user being banned
+  selectedChannel: string = 'Select Channel to Ban';
+
+  constructor(private UserService: UserService) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.UserService.getUsers().subscribe((users) => {
+      this.users = users;
+      this.matchUsers();
+    });
+  }
+
+  matchUsers() {
+    // Map pendingUsers with their full user objects (including id and username)
+    this.interestedUsers = this.selectedGroup.pendingUsers.map(
+      (userId: string) => {
+        const user = this.users.find((user) => user.id === userId);
+        return user
+          ? {
+              id: user.id,
+              username: user.username,
+            }
+          : { id: userId, username: 'Unknown' };
+      }
+    );
+
+    // Map users with their full user objects (including id and username)
+    this.selectedGroup.users = this.selectedGroup.users.map(
+      (userId: string) => {
+        const user = this.users.find((user) => user.id === userId);
+        return user
+          ? {
+              id: user.id,
+              username: user.username,
+              banned_channels: user.banned_channels || [], // Ensure banned_channels is always an array
+              isReported: this.selectedGroup.reported_users.includes(user.id), // Check if the user has been reported
+            }
+          : {
+              id: userId,
+              username: 'Unknown',
+              banned_channels: [],
+              isReported: false,
+            };
+      }
+    );
+
+    console.log('this.interestedUsers', this.interestedUsers);
+    console.log('this.selectedGroup', this.selectedGroup);
+  }
 
   approveInterest(group: any, interest: any) {
-    console.log('Approve Interest', group, interest);
+    this.UserService.approveInterest(group.id, interest.id).subscribe(
+      (updatedGroup) => {
+        this.selectedGroup = updatedGroup;
+        this.matchUsers();
+      }
+    );
   }
 
   declineInterest(group: any, interest: any) {
-    console.log('Decline Interest', group, interest);
+    this.UserService.declineInterest(group.id, interest.id).subscribe(
+      (updatedGroup) => {
+        this.selectedGroup = updatedGroup;
+        this.matchUsers();
+      }
+    );
   }
 
-  banUserFromChannel(group: any, user: any) {
-    console.log('Ban User from Channel', group, user);
+  banUserFromChannel(group: any, user: any, channelId: string) {
+    if (channelId && channelId !== 'Select Channel to Ban') {
+      console.log(`Banning user ${user.username} from channel ${channelId}`);
+      this.UserService.banUserFromChannel(
+        group.id,
+        user.id,
+        channelId
+      ).subscribe(
+        (updatedGroup) => {
+          console.log('Updated Group after banning user:', updatedGroup);
+          console.log(this.selectedGroup);
+
+          // Ensure the selectedGroup object is reassigned
+          this.selectedGroup = { ...updatedGroup };
+
+          this.matchUsers();
+          this.selectedChannel = 'Select Channel to Ban';
+
+          console.log('User banned from channel:', channelId);
+        },
+        (error) => {
+          console.error('Error banning user from channel:', error);
+        }
+      );
+    } else {
+      console.error('No channel selected for banning.');
+    }
   }
 
-  removeUserFromGroup(group: any, user: any) {
-    console.log('Remove User from Group', group, user);
+  removeUserFromGroup(group: any, user: any): void {
+    if (
+      confirm(
+        `Are you sure you want to remove ${user.username} from ${group.groupname}?`
+      )
+    ) {
+      this.UserService.removeUserFromGroup(group.id, user.id).subscribe(
+        (updatedGroup) => {
+          console.log('User removed from group:', updatedGroup);
+
+          // Update the selectedGroup with the new data
+          this.selectedGroup = { ...updatedGroup };
+
+          // Refresh the list of users
+          this.matchUsers();
+        },
+        (error) => {
+          console.error('Error removing user from group:', error);
+        }
+      );
+    }
   }
 
-  reportToSuperAdmin(group: any, user: any) {
-    console.log('Report to Super Admin', group, user);
+  reportToSuperAdmin(group: any, user: any): void {
+    if (
+      confirm(
+        `Are you sure you want to report ${user.username} to the Super Admin?`
+      )
+    ) {
+      this.UserService.reportUserToSuperAdmin(group.id, user.id).subscribe(
+        (updatedGroup) => {
+          console.log('User reported to Super Admin:', updatedGroup);
+
+          this.selectedGroup = { ...updatedGroup };
+
+          this.matchUsers();
+
+          // Optionally, you might want to update the UI or show a success message
+          alert(`${user.username} has been reported to the Super Admin.`);
+        },
+        (error) => {
+          console.error('Error reporting user to Super Admin:', error);
+          alert(`Failed to report ${user.username} to the Super Admin.`);
+        }
+      );
+    }
+  }
+
+  // Update the selected channel from the select element
+  onChannelSelect(event: Event) {
+    const target = event.target as HTMLSelectElement; // Cast EventTarget to HTMLSelectElement
+    this.selectedChannel = target.value;
   }
 }

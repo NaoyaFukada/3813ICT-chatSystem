@@ -20,6 +20,10 @@ export class GroupService {
     return this.http.get<Group[]>(this.URL, { params });
   }
 
+  getGroupById(groupId: string): Observable<Group> {
+    return this.http.get<Group>(`${this.URL}/${groupId}`);
+  }
+
   addGroup(group: Group): Observable<Group> {
     return this.http.post<Group>(this.URL, group);
   }
@@ -29,30 +33,33 @@ export class GroupService {
     return this.http.delete<void>(`${this.URL}/${id}`, { params });
   }
 
-  addChannel(groupId: string, channelName: string): Observable<Group> {
-    return this.http.post<Group>(`${this.URL}/${groupId}/channels`, {
-      channelName,
+  updateGroupName(groupId: string, newGroupName: string): Observable<Group> {
+    return this.http.put<Group>(`${this.URL}/${groupId}/name`, {
+      newGroupName,
     });
+  }
+
+  addChannel(
+    groupId: string,
+    channel: { id: string; name: string; banned_users: string[] }
+  ): Observable<Group> {
+    return this.http.post<Group>(`${this.URL}/${groupId}/channels`, channel);
   }
 
   updateChannelName(
     groupId: string,
-    oldChannelName: string,
+    channelId: string,
     newChannelName: string
   ): Observable<Group> {
     return this.http.put<Group>(
-      `${this.URL}/${groupId}/channels/${oldChannelName}`,
+      `${this.URL}/${groupId}/channels/${channelId}`,
       { newChannelName } // Sending the new channel name in the request body
     );
   }
 
-  deleteChannel(groupId: string, channelName: string): Observable<Group> {
+  deleteChannel(groupId: string, channelId: string): Observable<Group> {
     return this.http.delete<Group>(
-      `${this.URL}/${groupId}/channels/${channelName}`
+      `${this.URL}/${groupId}/channels/${channelId}`
     );
-  }
-
-  getGroupById(groupId: string): Observable<Group> {
-    return this.http.get<Group>(`${this.URL}/${groupId}`);
   }
 }

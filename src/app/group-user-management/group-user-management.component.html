@@ -2,7 +2,7 @@
   <!-- Users Interested in Joining -->
   <div class="interested-users-section p-0 mt-4 mb-3">
     <div
-      *ngFor="let interest of selectedGroup.interest_groups"
+      *ngFor="let interest of interestedUsers"
       class="d-flex justify-content-between align-items-center mb-3 interest-user"
     >
       <div class="d-flex align-items-center">
@@ -31,13 +31,32 @@
     *ngFor="let user of selectedGroup.users"
     class="d-flex justify-content-between align-items-center mb-3 user-member"
   >
-    <span>{{ user }}</span>
+    <span>{{ user.username }}</span>
     <div class="btn-container">
+      <select
+        class="form-select form-select-sm me-2 custom-select"
+        (change)="onChannelSelect($event)"
+        aria-label="Select channel to ban from"
+      >
+        <option value="none" selected>Select Channel to Ban</option>
+        <ng-container *ngFor="let channel of selectedGroup.channels">
+          <option
+            *ngIf="
+              !user.banned_channels ||
+              !user.banned_channels.includes(channel.id)
+            "
+            [value]="channel.id"
+          >
+            {{ channel.name }}
+          </option>
+        </ng-container>
+      </select>
       <button
         class="btn btn-outline-warning btn-sm me-2"
-        (click)="banUserFromChannel(selectedGroup, user)"
+        [disabled]="selectedChannel === 'Select Channel to Ban'"
+        (click)="banUserFromChannel(selectedGroup, user, selectedChannel)"
       >
-        Ban from Channel
+        Confirm Ban
       </button>
       <button
         class="btn btn-outline-danger btn-sm me-2"
@@ -48,8 +67,9 @@
       <button
         class="btn btn-outline-light btn-sm"
         (click)="reportToSuperAdmin(selectedGroup, user)"
+        [disabled]="user.isReported"
       >
-        Report
+        {{ user.isReported ? "Reported" : "Report" }}
       </button>
     </div>
   </div>

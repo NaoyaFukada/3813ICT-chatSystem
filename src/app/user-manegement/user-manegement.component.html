@@ -18,23 +18,43 @@
     >
       <div>
         <span>{{ user.username }}</span>
-        <span *ngIf="user.reported" class="badge bg-danger ms-5"
-          >Reported by {{ user.reportedBy }}: {{ user.reportContext }}</span
+        <span
+          *ngIf="user.reported_in_groups.length > 0"
+          class="badge bg-danger ms-5"
         >
+          Reported by {{ user.reported_in_groups.length }} group(s)
+        </span>
       </div>
       <div class="d-flex align-items-center">
-        <select class="form-select bg-dark text-white me-3" style="width: auto">
-          <option [selected]="user.role === 'chat_user'">Chat User</option>
-          <option [selected]="user.role === 'group_admin'">Group Admin</option>
-          <option [selected]="user.role === 'super_admin'">Super Admin</option>
+        <select
+          class="form-select bg-dark text-white me-3"
+          style="width: auto"
+          (change)="onRoleChange(user.id, $event)"
+        >
+          <option [selected]="user.roles.includes('Chat User')">
+            Chat User
+          </option>
+          <option [selected]="user.roles.includes('Group Admin')">
+            Group Admin
+          </option>
+          <option [selected]="user.roles.includes('Super Admin')">
+            Super Admin
+          </option>
         </select>
-        <button class="btn btn-outline-light btn-sm">Delete User</button>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          (click)="deleteUser(user.id)"
+        >
+          Delete User
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Save Changes Button -->
   <div class="d-flex justify-content-end mt-4">
-    <button class="btn btn-success" type="button">Save Changes</button>
+    <button class="btn btn-success" type="button" (click)="saveChanges()">
+      Save Changes
+    </button>
   </div>
 </div>

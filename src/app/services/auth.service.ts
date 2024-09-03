@@ -39,6 +39,12 @@ export class AuthService {
     return user ? JSON.parse(user).id : null;
   }
 
+  // Method to get the current user's information from session storage
+  getUserRole(): string | null {
+    const user = sessionStorage.getItem('current_user');
+    return user ? JSON.parse(user).roles[0] : null;
+  }
+
   // You can add other methods like login, logout, etc.
   updateUserInfo(updatedUser: User) {
     sessionStorage.setItem('current_user', JSON.stringify(updatedUser));

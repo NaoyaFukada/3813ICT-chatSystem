@@ -78,13 +78,13 @@ export class GroupManagementComponent implements OnInit {
   saveGroup() {
     if (this.newGroupName.trim()) {
       const newGroup: Group = {
-        // 7.9586611099464×(10**24) possibilities
         id: 'group-' + Math.random().toString(36).substring(2, 15), // Generate a random ID
         groupname: this.newGroupName.trim(),
         adminId: this.current_user_id,
         channels: [],
-        users: [],
+        users: [this.current_user_id],
         pendingUsers: [],
+        reported_users: [],
       };
       this.GroupService.addGroup(newGroup).subscribe((group) => {
         console.log('New group added:', group);
