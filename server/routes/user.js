@@ -62,8 +62,9 @@ module.exports = {
     });
 
     // API route to ban a user from a specific channel
-    app.put("/api/groups/:groupId/channels/:channelId/ban", (req, res) => {
-      const { groupId, channelId } = req.params;
+    app.put("/api/groups/:id/channels/:channelId/ban", (req, res) => {
+      const groupId = req.params.id;
+      const channelId = req.params.channelID;
       const { userId } = req.body;
 
       const group = groups.find((group) => group.id === groupId);

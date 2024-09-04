@@ -1,27 +1,252 @@
-# ChatSystem
+# Project Documentation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.7.
+Naoya Fukada (s5315403)
 
-## Development server
+## 1. Git Repository Organization
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Branching Strategies
 
-## Code scaffolding
+- **main Branch:** The main branch serves as the stable, production-ready branch. All new features are thoroughly tested in their respective branches before being merged into main. This branch is always kept in a deployable state, ensuring that the code here is reliable and ready for release.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- **Feature Branches:** For each main page component, a dedicated feature branch is created and named descriptively to reflect the feature it represents. These branches include both frontend and backend parts. Feature branches used in this project include `feature-admin`, `feature-profile`, `feature-chat`, `feature-explore`, `feature-signup`, and `feature-login`. Each feature branch is independently developed and tested before being merged back into the main branch, enabling more manageable development and reducing the risk of introducing bugs into the production code.
 
-## Build
+### Update Frequency
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- **Commits:** Frequent commits are made to feature branches, ideally after each significant change, such as creating a frontend component or implementing backend logic. Commits are also made after fixing any bugs that are found.
 
-## Running unit tests
+- **Merging:** Feature branches are merged into the main branch only after thorough testing.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 2. Data Structures
 
-## Running end-to-end tests
+For each model in the project, unique identifiers (IDs) are automatically generated. The ID format begins with a prefix (such as "user-"), followed by a random alphanumeric string. This ensures that each ID is unique across the system, avoiding potential conflicts and ensuring consistency in data representation.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### User Model
 
-## Further help
+User model should include the following data types:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- `id: string`
+- `username: string`
+- `email: string`
+- `password: string`
+- `roles: string[]`
+- `groups: string[]`
+- `interest_groups: string[]`
+- `banned_channels: string[]`
+- `reported_in_groups: string[]`
+
+### Group Model
+
+The Group model includes the following data types:
+
+- `id: string`
+- `groupname: string`
+- `adminId: string`
+- `channels: { id: string; name: string; banned_users: string[]; }[]`
+- `users: string[]`
+- `pendingUsers: string[]`
+- `reported_users: string[]`
+
+## 3. Angular Architecture
+
+### Components
+
+In an Angular project, components are essential for building Single Page Applications (SPAs). Components allow developers to encapsulate specific pieces of the user interface and related functionality, making it easier to manage and maintain the application.
+
+For this project, components are used to structure the application efficiently. Each page of the application, as well as the contents of each tab within those pages, are implemented as separate components. This approach not only organizes the project logically but also improves the overall maintainability of the application.
+
+### Services
+
+Services in Angular are used to centralize and encapsulate shared functionality, reducing the duplication of code across different components. By defining reusable functions and logic in service files, and importing these services into components, Angular components can leverage shared functionality without duplicating code. This not only improves maintainability but also ensures consistency throughout the application.
+
+For this project, services are primarily used to manage data and business logic. Specifically, services provide data as observables, allowing components to subscribe to these data streams. This enables real-time data updates and ensures that the UI remains responsive to changes.
+
+Three service files were created for this project:
+
+- **Authentication Service**
+
+- **User Management Service**
+
+- **Group Management Service**
+
+This structured approach ensures that each service is focused on a specific area of the application, promoting separation of concerns and making the codebase easier to maintain.
+
+### Models
+
+Models in Angular are used to define the structure and enforce data types for the objects used throughout the application, especially in service files. Defining models ensures that the data being handled conforms to expected types and structures when interacting with the server. This helps in preventing errors and makes the code more maintainable.
+
+For this project, two models are created:
+
+- **User Model**
+
+- **Group Model**
+
+### Routes
+
+The application routes are defined in `app.routes.ts`. The root route (`/`) is configured to redirect to `/login`, ensuring that users are prompted to log in when they first access the application. Additionally, logic is implemented in `login.ts` to automatically redirect logged-in users to `/chat`, preventing them from accessing the login page unless they log out. The navigation bar is displayed according to the user's role, and if a user attempts to access an unauthorized page, the system is designed to redirect them to an appropriate page. For example, a chat user trying to access the admin page will be redirected to the chat page. For this project, seven paths have been created:
+
+- `/` (root route, redirects to `/login`)
+- `/login` (login page)
+- `/signup` (registration page)
+- `/chat` (main chat interface)
+- `/explore` (explore other groups and show an interest to join)
+- `/profile` (user profile management)
+- `/admin` (administration panel)
+
+## 4. Node Server Architecture
+
+### Module
+
+For this project, both custom and core modules are used.
+
+#### Core modules used:
+
+- **Express:** To create the Node.js server, manage routes, and handle HTTP requests.
+
+- **Fs:** To read and write JSON data for users and groups.
+
+- **Path:** To handle and resolve the path of JSON file.
+
+- **Cors:** To enable Cross-Origin Resource Sharing, allowing requests from the frontend to interact with the backend server.
+
+#### Custom modules used:
+
+- **userDataHandler:** To load and save user data from/to `user.json`.
+
+- **groupDataHandler:** To load and save group data from/to `group.json`.
+
+### Functions
+
+- `loadUsers()`: Loads the users from the `user.json` file and returns them as an array.
+
+- `saveUsers(users)`: Saves the updated users array back to the `user.json` file.
+
+- `loadGroups()`: Loads the groups from the `group.json` file and returns them as an array.
+
+- `saveGroups(groups)`: Saves the updated groups array back to the `group.json` file.
+
+### Files
+
+- `server.js`: The main server file that initializes the Express server, loads user and group data, sets up CORS, and imports route files. It also starts the server on a specified port.
+
+- `routes/group.js`: Contains the group-related API routes, such as fetching, creating, updating, and deleting groups.
+
+- `routes/user.js`: Contains the user-related API routes, including fetching users, updating profiles, approving or declining group join requests, and more.
+
+- `routes/login.js`: Handles authentication by checking user credentials and returning user information if valid.
+
+- `handler/groupDataHandler.js`
+
+- `handler/userDataHandler.js`
+
+## 5. Server-Side Routes
+
+### User Routes
+
+- **GET /api/users:** Fetches all users.
+
+  - **Parameters:** None.
+  - **Return:** A list of all users in the system.
+
+- **PUT /api/users/:id:** Updates a user's profile.
+
+  - **Parameters:** `id` (User ID), `username`, `email`.
+  - **Return:** The updated user object.
+
+- **DELETE /api/users/:id:** Deletes a user.
+
+  - **Parameters:** `id` (User ID).
+  - **Return:** Success or failure message.
+
+- **POST /api/users:** Adds a new user.
+
+  - **Parameters:** User object containing `username`, and `password`.
+  - **Return:** The newly created user object.
+
+- **PUT /api/groups/:id/approve:** Approves a user's interest in joining a group.
+
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** The updated group object reflecting the user's membership.
+
+- **PUT /api/groups/:id/decline:** Declines a user's interest in joining a group.
+
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** The updated group object with the user removed from pending users.
+
+- **PUT /api/groups/:id/remove:** Removes a user from a group.
+
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** The updated group object without the specified user.
+
+- **PUT /api/groups/:id/channels/:channelId/ban:** Bans a user from a specific channel.
+
+  - **Parameters:** `id` (Group ID), `channelId` (Channel ID), `userId`.
+  - **Return:** The updated group object reflecting the banned user in the channel.
+
+- **PUT /api/groups/:id/report:** Reports a user to the Super Admin.
+
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** The updated group object reflecting the reported user.
+
+- **PUT /api/users/:id/role:** Updates a user's role.
+
+  - **Parameters:** `id` (User ID), `role`.
+  - **Return:** The updated user object with the new role.
+
+### Group Routes
+
+- **GET /api/groups:** Fetches all groups.
+
+  - **Parameters:** `adminId` (optional).
+  - **Return:** A list of groups, filtered by admin ID if provided.
+
+- **GET /api/groups/:id:** Fetches a specific group by its ID.
+
+  - **Parameters:** `id` (Group ID).
+  - **Return:** The group object corresponding to the provided ID.
+
+- **POST /api/groups:** Creates a new group.
+
+  - **Parameters:** Group object containing `groupname`, `adminId`, etc.
+  - **Return:** The newly created group object.
+
+- **PUT /api/groups/:id/admin-to-super:** Updates a group's admin to "super".
+
+  - **Parameters:** `id` (Group ID).
+  - **Return:** Success message after updating the admin to "super".
+
+- **DELETE /api/groups/:id:** Deletes a group.
+
+  - **Parameters:** `id` (Group ID), `adminId`.
+  - **Return:** Success or failure message depending on permissions.
+
+- **PUT /api/groups/:id/name:** Updates a group's name.
+
+  - **Parameters:** `id` (Group ID), `newGroupName`.
+  - **Return:** The updated group object with the new name.
+
+- **POST /api/groups/:id/channels:** Adds a new channel to a specific group.
+
+  - **Parameters:** `id` (Group ID), channel object (containing `id`, `name`, and `banned_users`).
+  - **Return:** The updated group object with the new channel added.
+
+- **PUT /api/groups/:id/channels/:channelId:** Updates the name of a channel in a specific group.
+
+  - **Parameters:** `groupId` (Group ID), `channelId` (Channel ID), `newChannelName`.
+  - **Return:** The updated group object with the renamed channel.
+
+- **DELETE /api/groups/:id/channels/:channelId:** Deletes a channel from a specific group.
+
+  - **Parameters:** `groupId` (Group ID), `channelId` (Channel ID).
+  - **Return:** The updated group object without the deleted channel.
+
+- **PUT /api/groups/:id/register-interest:** Registers a user's interest in joining a group.
+
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** Success message indicating that the interest was registered.
+
+### Login Routes
+
+- **POST /api/auth:** Checks user’s credentials.
+
+  - **Parameters:** `username`, `password`.
+  - **Return:** Logged in user info.
