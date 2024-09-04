@@ -41,10 +41,20 @@ The Group model includes the following data types:
 - `id: string`
 - `groupname: string`
 - `adminId: string`
-- `channels: { id: string; name: string; banned_users: string[]; }[]`
+- `channels: string`
 - `users: string[]`
 - `pendingUsers: string[]`
 - `reported_users: string[]`
+
+### Channel Model
+
+The channel model includes the following data types:
+
+- `id: string`
+- `name: string`
+- `users: string[]`
+- `pendingUsers: string[]`
+- `banned_users: string[]`
 
 ## 3. Angular Architecture
 
@@ -68,6 +78,8 @@ Three service files were created for this project:
 
 - **Group Management Service**
 
+- **Channel Management Service**
+
 This structured approach ensures that each service is focused on a specific area of the application, promoting separation of concerns and making the codebase easier to maintain.
 
 ### Models
@@ -79,6 +91,8 @@ For this project, two models are created:
 - **User Model**
 
 - **Group Model**
+
+- **Channel Model**
 
 ### Routes
 
@@ -124,6 +138,10 @@ For this project, both custom and core modules are used.
 
 - `saveGroups(groups)`: Saves the updated groups array back to the `group.json` file.
 
+- `loadChannels()`: Loads the channels from the `channel.json` file and returns them as an array.
+
+- `saveChannels(channels)`: Saves the updated channels array back to the `channel.json` file.
+
 ### Files
 
 - `server.js`: The main server file that initializes the Express server, loads user and group data, sets up CORS, and imports route files. It also starts the server on a specified port.
@@ -134,9 +152,13 @@ For this project, both custom and core modules are used.
 
 - `routes/login.js`: Handles authentication by checking user credentials and returning user information if valid.
 
+- `routes/channel.js`
+
 - `handler/groupDataHandler.js`
 
 - `handler/userDataHandler.js`
+
+- `handler/channelDataHandler.js`
 
 ## 5. Server-Side Routes
 
@@ -188,7 +210,6 @@ For this project, both custom and core modules are used.
   - **Return:** The updated group object reflecting the reported user.
 
 - **PUT /api/users/:id/role:** Updates a user's role.
-
   - **Parameters:** `id` (User ID), `role`.
   - **Return:** The updated user object with the new role.
 
@@ -224,29 +245,54 @@ For this project, both custom and core modules are used.
   - **Parameters:** `id` (Group ID), `newGroupName`.
   - **Return:** The updated group object with the new name.
 
-- **POST /api/groups/:id/channels:** Adds a new channel to a specific group.
+- **PUT /api/groups/:id/register-interest:** Registers a user's interest in joining a group.
+  - **Parameters:** `id` (Group ID), `userId`.
+  - **Return:** Success message indicating that the interest was registered.
 
-  - **Parameters:** `id` (Group ID), channel object (containing `id`, `name`, and `banned_users`).
-  - **Return:** The updated group object with the new channel added.
+### Channel Routes
 
-- **PUT /api/groups/:id/channels/:channelId:** Updates the name of a channel in a specific group.
+- **POST /api/groups/:id/channels:** Creates a new channel within a specific group and updates the user who created it.
 
-  - **Parameters:** `groupId` (Group ID), `channelId` (Channel ID), `newChannelName`.
-  - **Return:** The updated group object with the renamed channel.
+  - **Parameters:** `id` (Group ID), `name`, `users`, `pendingUsers`, `banned_users`.
+  - **Return:** Returns the updated group with the new channel ID.
+
+- **GET /api/channels/:id:** Retrieves the details of a specific channel.
+
+  - **Parameters:** `id` (Channel ID).
+  - **Return:** The details of the requested channel, including users, pending users, and banned users.
+
+- **PUT /api/channels/:channelId:** Updates the name of a specific channel.
+
+  - **Parameters:** `channelId`, `newChannelName`.
+  - **Return:** The updated channel object.
 
 - **DELETE /api/groups/:id/channels/:channelId:** Deletes a channel from a specific group.
 
-  - **Parameters:** `groupId` (Group ID), `channelId` (Channel ID).
-  - **Return:** The updated group object without the deleted channel.
+  - **Parameters:** `id` (Group ID), `channelId`.
+  - **Return:** Success message indicating that the channel has been deleted.
 
-- **PUT /api/groups/:id/register-interest:** Registers a user's interest in joining a group.
+- **PUT /api/channels/:channelId/approveUser:** Approves a user to join the channel.
 
-  - **Parameters:** `id` (Group ID), `userId`.
-  - **Return:** Success message indicating that the interest was registered.
+  - **Parameters:** `channelId`, `userId`.
+  - **Return:** The updated user object after being added to the channel.
+
+- **PUT /api/channels/:channelId/declineUser:** Declines a user's request to join the channel.
+
+  - **Parameters:** `channelId`, `userId`.
+  - **Return:** The updated user object.
+
+- **PUT /api/channels/:channelId/banUser:** Bans a user from a specific channel.
+
+  - **Parameters:** `channelId`, `userId`.
+  - **Return:** The updated user object showing the user as banned from the channel.
+
+- **PUT /api/channels/:channelId/requestToJoin:** Registers a user's interest in joining a specific channel.
+
+  - **Parameters:** `channelId`, `userId`.
+  - **Return:** Success message indicating that the request to join has been registered, along with the updated channel and user objects.
 
 ### Login Routes
 
 - **POST /api/auth:** Checks user’s credentials.
-
   - **Parameters:** `username`, `password`.
   - **Return:** Logged in user info.
