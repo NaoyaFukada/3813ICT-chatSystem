@@ -56,28 +56,4 @@ export class GroupService {
   updateGroupAdminToSuper(groupId: string): Observable<void> {
     return this.http.put<void>(`${this.URL}/${groupId}/admin-to-super`, {});
   }
-
-  addChannel(
-    groupId: string,
-    channel: { id: string; name: string; banned_users: string[] }
-  ): Observable<Group> {
-    return this.http.post<Group>(`${this.URL}/${groupId}/channels`, channel);
-  }
-
-  updateChannelName(
-    groupId: string,
-    channelId: string,
-    newChannelName: string
-  ): Observable<Group> {
-    return this.http.put<Group>(
-      `${this.URL}/${groupId}/channels/${channelId}`,
-      { newChannelName } // Sending the new channel name in the request body
-    );
-  }
-
-  deleteChannel(groupId: string, channelId: string): Observable<Group> {
-    return this.http.delete<Group>(
-      `${this.URL}/${groupId}/channels/${channelId}`
-    );
-  }
 }

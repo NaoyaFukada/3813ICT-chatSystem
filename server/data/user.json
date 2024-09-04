@@ -10,9 +10,14 @@
     "groups": [
       "group-gsnwukea9n4",
       "group-d7bq7ig4iie",
-      "group-q2xnwe91y3"
+      "group-q2xnwe91y3",
+      "group-5gk3736sps6"
     ],
     "interest_groups": [],
+    "channels": [
+      "channel-tqct498fca9"
+    ],
+    "interest_channels": [],
     "banned_channels": [],
     "reported_in_groups": []
   },
@@ -25,13 +30,23 @@
       "Group Admin"
     ],
     "groups": [
-      "group-q2xnwe91y3"
-    ],
-    "interest_groups": [
+      "group-q2xnwe91y3",
       "group-gsnwukea9n4"
     ],
-    "banned_channels": [],
-    "reported_in_groups": []
+    "interest_groups": [],
+    "channels": [
+      "channel-tqct498fca9"
+    ],
+    "interest_channels": [
+      "channel-qx16ut4cnk"
+    ],
+    "banned_channels": [
+      "channel-sc4b3hdxyg"
+    ],
+    "reported_in_groups": [],
+    "reported_by_groups": [
+      "group-5gk3736sps6"
+    ]
   },
   {
     "id": "user-x58f4yhqtzm",
@@ -43,6 +58,8 @@
     ],
     "groups": [],
     "interest_groups": [],
+    "channels": [],
+    "interest_channels": [],
     "banned_channels": [],
     "reported_in_groups": []
   },
@@ -56,6 +73,8 @@
     ],
     "groups": [],
     "interest_groups": [],
+    "channels": [],
+    "interest_channels": [],
     "banned_channels": [],
     "reported_in_groups": []
   }

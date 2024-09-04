@@ -12,13 +12,13 @@
       <div class="btn-container">
         <button
           class="btn btn-outline-success btn-sm me-2"
-          (click)="approveInterest(selectedGroup, interest)"
+          (click)="approveUser(interest)"
         >
           Approve
         </button>
         <button
           class="btn btn-outline-danger btn-sm"
-          (click)="declineInterest(selectedGroup, interest)"
+          (click)="declineUser(interest)"
         >
           Decline
         </button>
@@ -26,25 +26,18 @@
     </div>
   </div>
 
-  <!-- Existing Users -->
+  <!-- Existing Users in the Channel -->
   <div
-    *ngFor="let user of selectedGroup.users"
+    *ngFor="let user of selectedChannel.users"
     class="d-flex justify-content-between align-items-center mb-3 user-member"
   >
     <span>{{ user.username }}</span>
     <div class="btn-container">
       <button
-        class="btn btn-outline-danger btn-sm me-2"
-        (click)="removeUserFromGroup(selectedGroup, user)"
+        class="btn btn-outline-warning btn-sm me-2"
+        (click)="banUser(user)"
       >
-        Remove from Group
-      </button>
-      <button
-        class="btn btn-outline-light btn-sm"
-        (click)="reportToSuperAdmin(selectedGroup, user)"
-        [disabled]="user.isReported"
-      >
-        {{ user.isReported ? "Reported" : "Report" }}
+        Ban From Channel
       </button>
     </div>
   </div>

@@ -1,25 +1,25 @@
-/* Button */
-.btn {
-  cursor: pointer;
+.d-flex {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevents wrapping of flex items */
 }
 
-.btn-success {
-  padding: 8px 16px;
-  border-radius: 20px;
+.channel-item .form-control {
+  flex-grow: 1; /* Ensures the input field takes up remaining space */
 }
 
-/* Buttons */
+.button-group {
+  display: flex;
+  gap: 8px; /* Adds space between buttons */
+  align-items: center;
+  flex-wrap: nowrap; /* Ensures buttons stay in the same row */
+}
+
 .btn-sm {
   padding: 4px 8px;
 }
 
-.d-flex {
-  display: flex;
-  align-items: center;
-}
-
-/* New Group Input Field Styling */
-input.form-control.bg-transparent.text-white {
+.d-flex .form-control {
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -28,14 +28,6 @@ input.form-control.bg-transparent.text-white {
   font-weight: 500;
   color: #ffffff;
   line-height: normal;
-  height: normal;
-  opacity: 0.8;
-}
-
-/* Placeholder Styling */
-input.form-control::placeholder {
-  color: #adb5bd;
-  opacity: 0.4;
 }
 
 input.form-control.bg-transparent.text-white.editable {

@@ -48,7 +48,7 @@
             <a
               class="nav-link text-white"
               style="cursor: pointer"
-              (click)="selectChannel(channel.name)"
+              (click)="selectChannel(channel)"
               >{{ channel.name }}</a
             >
           </li>
@@ -63,15 +63,45 @@
         <div class="p-3 border-bottom bg-dark text-white" id="chat-header">
           <h5>
             {{ selectedGroup?.groupname || "Select a group" }}
-            {{ selectedChannel ? " - " + selectedChannel : "" }}
+            {{ selectedChannel ? " - " + selectedChannel.name : "" }}
           </h5>
         </div>
+
+        <!-- Conditionally show chat content or 'Request to Join Channel' button -->
         <div class="flex-grow-1 p-3 overflow-auto" id="chat-content">
-          <!-- Chat messages will go here -->
-          <div class="message"><strong>User1:</strong> Hello everyone!</div>
-          <div class="message"><strong>User2:</strong> Hi! How are you?</div>
+          <div *ngIf="isUserInChannel; else requestToJoin">
+            <!-- Chat messages go here -->
+            <div class="message"><strong>User1:</strong> Hello everyone!</div>
+            <div class="message"><strong>User2:</strong> Hi! How are you?</div>
+          </div>
+
+          <!-- 'Request to Join' button if user is not in the channel -->
+          <ng-template #requestToJoin>
+            <div class="d-flex justify-content-center align-items-center h-100">
+              <button
+                *ngIf="!isUserPendingApproval"
+                class="btn btn-primary"
+                (click)="requestToJoinChannel()"
+              >
+                Request to Join Channel
+              </button>
+
+              <button
+                *ngIf="isUserPendingApproval"
+                class="btn btn-secondary"
+                disabled
+              >
+                Waiting for Approval
+              </button>
+            </div>
+          </ng-template>
         </div>
-        <div class="p-3 border-top bg-dark" id="chat-input">
+
+        <div
+          *ngIf="isUserInChannel"
+          class="p-3 border-top bg-dark"
+          id="chat-input"
+        >
           <div class="input-group">
             <input
               type="text"

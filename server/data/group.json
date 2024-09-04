@@ -4,46 +4,21 @@
     "groupname": "Cool Group",
     "adminId": "user-rv4uafl3dt",
     "channels": [
-      {
-        "id": "channel-pi50inyxall",
-        "name": "basketball",
-        "banned_users": []
-      },
-      {
-        "id": "channel-4uw1n1y7j4l",
-        "name": "tennis",
-        "banned_users": []
-      },
-      {
-        "id": "channel-ypugk9l8b5",
-        "name": "baseball",
-        "banned_users": []
-      }
+      "channel-tqct498fca9",
+      "channel-qx16ut4cnk"
     ],
     "users": [
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [
+      "user-rv4uafl3dt",
       "user-rw4uafl3dt"
     ],
+    "pendingUsers": [],
     "reported_users": []
   },
   {
     "id": "group-q2xnwe91y3",
     "groupname": "awesome group 2",
     "adminId": "user-rw4uafl3dt",
-    "channels": [
-      {
-        "id": "channel-qstfvu7wuk",
-        "name": "baseball",
-        "banned_users": []
-      },
-      {
-        "id": "channel-3gmg6uudk4d",
-        "name": "tennis",
-        "banned_users": []
-      }
-    ],
+    "channels": [],
     "users": [
       "user-rw4uafl3dt",
       "user-rv4uafl3dt"
@@ -61,5 +36,22 @@
     ],
     "pendingUsers": [],
     "reported_users": []
+  },
+  {
+    "id": "group-5gk3736sps6",
+    "groupname": "test",
+    "adminId": "user-rv4uafl3dt",
+    "channels": [
+      "channel-sc4b3hdxyg",
+      "channel-3l70v3bl7j5",
+      "channel-yj3fr43ebe7"
+    ],
+    "users": [
+      "user-rv4uafl3dt"
+    ],
+    "pendingUsers": [],
+    "reported_users": [
+      "user-rw4uafl3dt"
+    ]
   }
 ]

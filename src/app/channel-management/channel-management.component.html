@@ -3,17 +3,29 @@
     *ngFor="let channel of selectedGroup.channels; let i = index"
     class="channel-item d-flex justify-content-between align-items-center mb-3"
   >
-    <input
-      type="text"
-      class="form-control bg-transparent text-white border-none p-0"
-      [(ngModel)]="editingChannelNames[i].name"
-      name="editingChannelNames[i].name"
-      [readonly]="!isEditing[i]"
-      [ngClass]="{ editable: isEditing[i] }"
-      placeholder="Channel name"
-      #channelInput
-    />
-    <div class="d-flex">
+    <!-- Channel Name Input Field -->
+    <div class="flex-grow-1">
+      <input
+        type="text"
+        class="form-control bg-transparent text-white border-none p-0"
+        [(ngModel)]="channels[i].name"
+        name="channels[i].name"
+        [readonly]="!isEditing[i]"
+        [ngClass]="{ editable: isEditing[i] }"
+        placeholder="Channel name"
+        #channelInput
+      />
+    </div>
+
+    <!-- Button Section -->
+    <div class="d-flex button-group ms-2">
+      <button
+        class="btn btn-outline-secondary btn-sm me-2"
+        *ngIf="!isEditing[i]"
+        (click)="manageChannel(channels[i])"
+      >
+        Manage Channel
+      </button>
       <button
         class="btn btn-outline-secondary btn-sm me-2"
         *ngIf="!isEditing[i]"
@@ -38,7 +50,7 @@
       <button
         class="btn btn-outline-danger btn-sm"
         *ngIf="!isEditing[i]"
-        (click)="deleteChannel(selectedGroup, channel, i)"
+        (click)="deleteChannel(selectedGroup, channels[i], i)"
       >
         Delete
       </button>

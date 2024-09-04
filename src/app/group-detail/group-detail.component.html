@@ -23,6 +23,14 @@
       >
         Change Group Name
       </a>
+
+      <a
+        class="nav-item nav-link nav-btn"
+        *ngIf="activeChannel"
+        [class.active]="selectedTab === 'channel_user_management'"
+      >
+        {{ activeChannel.name }} User Management
+      </a>
     </div>
   </div>
 
@@ -31,6 +39,7 @@
     <app-channel-management
       *ngIf="selectedTab === 'channel_management'"
       [selectedGroup]="selectedGroup"
+      (manageChannelEvent)="selectChannelUserManagement($event)"
     ></app-channel-management>
 
     <!-- User Management Tab -->
@@ -38,6 +47,12 @@
       *ngIf="selectedTab === 'user_management'"
       [selectedGroup]="selectedGroup"
     ></app-group-user-management>
+
+    <!-- Channel User Management Tab -->
+    <app-channel-user-management
+      *ngIf="selectedTab === 'channel_user_management' && activeChannel"
+      [selectedChannel]="activeChannel"
+    ></app-channel-user-management>
 
     <!-- Change Group Name Tab -->
     <div *ngIf="selectedTab === 'change_group_name'">

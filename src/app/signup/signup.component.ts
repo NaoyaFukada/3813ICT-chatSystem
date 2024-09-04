@@ -36,21 +36,26 @@ export class SignupComponent {
       roles: ['Chat User'],
       groups: [],
       interest_groups: [],
+      channels: [],
+      interest_channels: [],
       banned_channels: [],
       reported_in_groups: [],
     };
 
-    this.UserService.addUser(newUser).subscribe(
-      () => {
+    this.UserService.addUser(newUser).subscribe({
+      next: () => {
         alert('Signup successful!');
         sessionStorage.setItem('current_user', JSON.stringify(newUser));
         this.appComponent.updateRole();
-        this.router.navigate(['/chat']); // Redirect to login page after successful signup
+        this.router.navigate(['/chat']);
       },
-      (error) => {
+      error: (error) => {
         console.error('Error during signup:', error);
         alert('Signup failed. Please try again.');
-      }
-    );
+      },
+      complete: () => {
+        console.log('Signup process completed');
+      },
+    });
   }
 }

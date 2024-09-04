@@ -1,9 +1,17 @@
-import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { NgIf } from '@angular/common';
-import { NgFor } from '@angular/common';
+import {
+  Component,
+  Input,
+  Output,
+  OnInit,
+  EventEmitter,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroupService } from '../services/group.service';
-import { NgClass } from '@angular/common';
+import { ChannelService } from '../services/channel.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-channel-management',
@@ -14,6 +22,7 @@ import { NgClass } from '@angular/common';
 })
 export class ChannelManagementComponent implements OnInit {
   @Input() selectedGroup: any; // Receive selectedGroup from parent component
+  @Output() manageChannelEvent = new EventEmitter<any>();
 
   @ViewChild('channelNameInput', { static: false })
   channelNameInput!: ElementRef;
@@ -21,27 +30,83 @@ export class ChannelManagementComponent implements OnInit {
   isEditing: boolean[] = []; // Track which channels are being edited
   addingChannel: boolean = false; // State for whether a new channel is being added
   newChannelName: string = ''; // Holds the new channel name
-  originalChannelNames: { id: string; name: string }[] = []; // Store original channel objects
-  editingChannelNames: { id: string; name: string }[] = []; // Temporary storage for editing channel objects
+  current_user_id: any = '';
+  originalChannels: {
+    id: string;
+    name: string;
+    banned_users: string[];
+    users: string[];
+    pendingUsers: string[];
+  }[] = []; // Store original channel objects
+  channels: {
+    id: string;
+    name: string;
+    banned_users: string[];
+    users: string[];
+    pendingUsers: string[];
+  }[] = []; // Temporary storage for editing channel objects
 
-  constructor(private GroupService: GroupService) {}
+  constructor(
+    private GroupService: GroupService,
+    private ChannelService: ChannelService,
+    private AuthService: AuthService
+  ) {}
 
   ngOnInit() {
-    // Reinitialize the editingChannelNames array with the latest data
-    this.editingChannelNames = [...this.selectedGroup.channels];
-    console.log('editingChannelNames', this.editingChannelNames);
+    this.loadChannelDetails();
+    this.current_user_id = this.AuthService.getUserID();
+  }
+
+  // Get the channel name and details within the selected group
+  loadChannelDetails() {
+    // Clear the editingChannels array
+    this.channels = [];
+
+    // Fetch each channel by its ID from the group
+    this.selectedGroup.channels.forEach((channelId: string) => {
+      this.ChannelService.getChannelById(channelId).subscribe({
+        next: (channelData) => {
+          // Store the entire channelData object in channels
+          this.channels.push({
+            id: channelData.id,
+            name: channelData.name,
+            banned_users: channelData.banned_users,
+            users: channelData.users,
+            pendingUsers: channelData.pendingUsers,
+          });
+
+          this.isEditing.push(false); // Initialize isEditing array for each channel
+          console.log('Channel Data:', channelData);
+          console.log(this.channels);
+        },
+        error: (error) => {
+          console.error('Error fetching channel:', error);
+          alert(
+            `Failed to load channel with ID: ${channelId}. Please try again.`
+          );
+        },
+        complete: () => {
+          console.log(
+            `Channel details for ID ${channelId} fetched successfully.`
+          );
+        },
+      });
+    });
+  }
+
+  manageChannel(channel: any) {
+    this.manageChannelEvent.emit(channel); // Emit the event with channel data
   }
 
   cancelEdit(index: number) {
     this.isEditing[index] = false;
-    this.editingChannelNames[index] = { ...this.originalChannelNames[index] }; // Restore original name
+    this.channels[index] = { ...this.originalChannels[index] }; // Restore original channel data
   }
 
+  // Enable mode to edit channels
   editChannel(index: number, inputRef: HTMLInputElement) {
     this.isEditing[index] = true;
-    this.originalChannelNames[index] = {
-      ...this.selectedGroup.channels[index],
-    }; // Store original object
+    this.originalChannels[index] = { ...this.channels[index] }; // Store original object
     setTimeout(() => {
       inputRef.focus();
       const length = inputRef.value.length;
@@ -49,62 +114,95 @@ export class ChannelManagementComponent implements OnInit {
     }, 0);
   }
 
+  // Update channel name
   saveChannelName(index: number) {
     this.isEditing[index] = false;
-    const updatedChannelName = this.editingChannelNames[index].name;
-    console.log('Channel name updated:', updatedChannelName);
-    this.GroupService.updateChannelName(
-      this.selectedGroup.id,
-      this.originalChannelNames[index].id,
-      updatedChannelName
-    ).subscribe(() => {
-      this.selectedGroup.channels[index].name = updatedChannelName; // Update the actual value after saving
-      console.log('Channel name saved to server:', updatedChannelName);
+    const updatedChannelName = this.channels[index].name; // Get the updated channel name from the editing array
+    const channelId = this.channels[index].id; // Get the channel ID
+
+    console.log('Updating channel name:', updatedChannelName);
+
+    this.ChannelService.updateChannelName(
+      channelId, // Pass only the channel ID
+      updatedChannelName // Pass the new channel name
+    ).subscribe({
+      next: () => {
+        console.log('Channel name saved to server:');
+      },
+      error: (error) => {
+        this.channels[index] = { ...this.originalChannels[index] };
+        console.error('Error updating channel name:', error);
+        alert('Failed to update channel name. Please try again.');
+      },
+      complete: () => {
+        console.log('Channel name update process completed.');
+      },
     });
   }
 
-  deleteChannel(
-    group: any,
-    channel: { id: string; name: string },
-    index: number
-  ) {
-    this.GroupService.deleteChannel(group.id, channel.id).subscribe(
-      (updatedGroup) => {
-        console.log(updatedGroup);
+  // Frontend: Deleting a channel
+  deleteChannel(group: any, channel: any, index: number) {
+    console.log(group.id, channel.id);
+    this.ChannelService.deleteChannel(group.id, channel.id).subscribe({
+      next: () => {
         this.selectedGroup.channels.splice(index, 1); // Remove channel from group
-        this.editingChannelNames.splice(index, 1); // Remove channel from temporary storage
+        this.channels.splice(index, 1); // Remove channel from editing storage
         console.log('Channel deleted:', channel.name);
-      }
-    );
+      },
+      error: (error) => {
+        console.error('Error deleting channel:', error);
+        alert('Failed to delete channel. Please try again.');
+      },
+    });
   }
 
-  // Focus on the input field when clicking the list item
   AddfocusInputField(event: MouseEvent) {
     if (this.channelNameInput) {
       this.channelNameInput.nativeElement.focus();
     }
   }
 
+  // Create a new channel
   saveChannel() {
     if (this.newChannelName.trim()) {
       const newChannel = {
         id: 'channel-' + Math.random().toString(36).substring(2, 15), // Generate a random ID
         name: this.newChannelName.trim(),
+        users: [this.current_user_id],
+        pendingUsers: [],
         banned_users: [],
       };
 
-      this.GroupService.addChannel(this.selectedGroup.id, newChannel).subscribe(
-        (updatedGroup) => {
+      // Call the ChannelService to add the new channel
+      this.ChannelService.addChannel(
+        this.selectedGroup.id,
+        newChannel
+      ).subscribe({
+        next: (updatedGroup) => {
           this.selectedGroup = updatedGroup;
-          this.editingChannelNames.push(newChannel); // Add new channel to temporary storage
+          this.channels.push(newChannel); // Add the new channel to the editing array
           console.log('New channel added:', newChannel.name);
           this.newChannelName = '';
           this.addingChannel = false;
-        }
-      );
+        },
+        error: (error) => {
+          console.error('Error adding channel:', error);
+          alert('Failed to add channel. Please try again.');
+        },
+        complete: () => {
+          console.log('Channel addition process completed.');
+        },
+      });
     }
   }
 
+  // Cancel the creation of new channel
+  cancelChannel() {
+    this.newChannelName = '';
+    this.addingChannel = false;
+  }
+
+  // Start the process to add new channel
   startAddingChannel() {
     this.addingChannel = true;
     setTimeout(() => {
@@ -112,10 +210,5 @@ export class ChannelManagementComponent implements OnInit {
         this.channelNameInput.nativeElement.focus();
       }
     }, 0);
-  }
-
-  cancelChannel() {
-    this.newChannelName = '';
-    this.addingChannel = false;
   }
 }
