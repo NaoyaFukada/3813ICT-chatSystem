@@ -12,57 +12,24 @@ export class UserService {
 
   private URL = 'http://localhost:3000/api';
 
+  // Get all users
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.URL}/users`);
   }
 
-  approveInterest(groupId: string, userId: string): Observable<Group> {
-    return this.http.put<Group>(`${this.URL}/groups/${groupId}/approve`, {
-      userId,
-    });
+  // Add a new user
+  addUser(user: User): Observable<User> {
+    return this.http.post<User>(`${this.URL}/users`, user);
   }
 
-  declineInterest(groupId: string, userId: string): Observable<Group> {
-    return this.http.put<Group>(`${this.URL}/groups/${groupId}/decline`, {
-      userId,
-    });
-  }
-
-  banUserFromChannel(
-    groupId: string,
-    userId: string,
-    channelId: string
-  ): Observable<Group> {
-    return this.http.put<Group>(
-      `${this.URL}/groups/${groupId}/channels/${channelId}/ban`,
-      { userId }
-    );
-  }
-
-  removeUserFromGroup(groupId: string, userId: string): Observable<Group> {
-    return this.http.put<Group>(`${this.URL}/groups/${groupId}/remove`, {
-      userId,
-    });
-  }
-
-  leaveGroup(groupId: string, userId: string): Observable<void> {
-    return this.http.put<void>(`${this.URL}/groups/${groupId}/leave`, {
-      userId,
-    });
-  }
-
-  reportUserToSuperAdmin(groupId: string, userId: string): Observable<Group> {
-    return this.http.put<Group>(`${this.URL}/groups/${groupId}/report`, {
-      userId,
-    });
-  }
-
+  // Update user role
   updateUserRole(userId: string, newRole: string): Observable<User> {
     return this.http.put<User>(`${this.URL}/users/${userId}/role`, {
       role: newRole,
     });
   }
 
+  // Update user profile
   updateUserProfile(
     userId: string,
     updatedInfo: { username: string; email: string }
@@ -70,11 +37,8 @@ export class UserService {
     return this.http.put<User>(`${this.URL}/users/${userId}`, updatedInfo);
   }
 
+  // Delete a user
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.URL}/users/${userId}`);
-  }
-
-  addUser(user: User): Observable<User> {
-    return this.http.post<User>(`${this.URL}/users`, user);
   }
 }

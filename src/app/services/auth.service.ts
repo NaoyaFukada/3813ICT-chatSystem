@@ -12,6 +12,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  // Login to user account
   login(credentials: { username: string; password: string }): Observable<User> {
     return this.http.post<User>(this.URL, credentials);
   }
@@ -28,30 +29,32 @@ export class AuthService {
     }
   }
 
-  logout() {
-    sessionStorage.removeItem('current_user');
-    this.router.navigate(['/login']);
-  }
-
+  // Get logged in user's information
   getUserInfo(): any | null {
     const user = sessionStorage.getItem('current_user');
     return user ? JSON.parse(user) : null;
   }
 
-  // Method to get the current user's information from session storage
+  // Get logged in user's ID
   getUserID(): string | null {
-    const user = sessionStorage.getItem('current_user');
-    return user ? JSON.parse(user).id : null;
+    const user = this.getUserInfo();
+    return user ? user.id : null;
   }
 
-  // Method to get the current user's information from session storage
+  // Get the current user's role
   getUserRole(): string | null {
-    const user = sessionStorage.getItem('current_user');
-    return user ? JSON.parse(user).roles[0] : null;
+    const user = this.getUserInfo();
+    return user ? user.roles[0] : null;
   }
 
-  // You can add other methods like login, logout, etc.
+  // Update user's information in session
   updateUserInfo(updatedUser: User) {
     sessionStorage.setItem('current_user', JSON.stringify(updatedUser));
+  }
+
+  // Logout
+  logout() {
+    sessionStorage.removeItem('current_user');
+    this.router.navigate(['/login']);
   }
 }

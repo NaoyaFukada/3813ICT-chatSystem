@@ -1,6 +1,6 @@
 module.exports = {
   route: (app, users, groups, saveGroups, saveUsers) => {
-    // API route to get all groups
+    // Get all groups
     app.get("/api/groups", (req, res) => {
       const adminIds = req.query.adminId ? [].concat(req.query.adminId) : null;
 
@@ -15,7 +15,7 @@ module.exports = {
       res.json(filteredGroups);
     });
 
-    // API route to get a specific group by its ID
+    // Get a specific group by its ID
     app.get("/api/groups/:id", (req, res) => {
       const groupId = req.params.id;
       const group = groups.find((group) => group.id === groupId);
@@ -27,7 +27,7 @@ module.exports = {
       }
     });
 
-    // API route to add a new group
+    // Add a new group
     app.post("/api/groups", (req, res) => {
       const newGroup = req.body;
       console.log(newGroup);
@@ -49,26 +49,23 @@ module.exports = {
       res.status(201).json(newGroup);
     });
 
-    // API route to update group adminId to "super"
-    app.put("/api/groups/:id/admin-to-super", (req, res) => {
+    // Update a group name
+    app.put("/api/groups/:id/name", (req, res) => {
       const groupId = req.params.id;
+      const { newGroupName } = req.body;
 
       const group = groups.find((group) => group.id === groupId);
 
-      console.log(group);
-
       if (group) {
-        group.adminId = "super";
-        saveGroups(groups);
-        res
-          .status(200)
-          .json({ message: 'Group adminId updated to "super" successfully' });
+        group.groupname = newGroupName; // Update the group name
+        saveGroups(groups); // Save the updated group list to JSON file
+        res.status(200).json(group);
       } else {
         res.status(404).json({ message: "Group not found" });
       }
     });
 
-    // API route to delete a group
+    // Delete a group
     app.delete("/api/groups/:id", (req, res) => {
       const groupId = req.params.id;
       const adminId = req.query.adminId;
@@ -103,23 +100,7 @@ module.exports = {
       }
     });
 
-    // API route to update a group name
-    app.put("/api/groups/:id/name", (req, res) => {
-      const groupId = req.params.id;
-      const { newGroupName } = req.body;
-
-      const group = groups.find((group) => group.id === groupId);
-
-      if (group) {
-        group.groupname = newGroupName; // Update the group name
-        saveGroups(groups); // Save the updated group list to JSON file
-        res.status(200).json(group);
-      } else {
-        res.status(404).json({ message: "Group not found" });
-      }
-    });
-
-    // API route to register interest in a group
+    // Request to join a group
     app.put("/api/groups/:id/register-interest", (req, res) => {
       const groupId = req.params.id;
       const userId = req.body.userId;
@@ -143,6 +124,142 @@ module.exports = {
         saveUsers(users);
 
         res.status(200).json({ message: "Interest registered successfully" });
+      } else {
+        res.status(404).json({ message: "Group or user not found" });
+      }
+    });
+
+    // Approve user to join a group
+    app.put("/api/groups/:id/approve", (req, res) => {
+      const groupId = req.params.id;
+      const userId = req.body.userId;
+
+      const group = groups.find((group) => group.id === groupId);
+      const user = users.find((user) => user.id === userId);
+
+      if (group && user) {
+        // Remove the user from the group's pending users
+        group.pendingUsers = group.pendingUsers.filter((id) => id !== userId);
+
+        // Add the user to the group's users
+        group.users.push(userId);
+
+        // Add the group to the user's list of groups
+        if (!user.groups.includes(groupId)) {
+          user.groups.push(groupId);
+        }
+
+        // Remove the group from the user's interest groups
+        user.interest_groups = user.interest_groups.filter(
+          (id) => id !== groupId
+        );
+
+        // Save the updated groups and users
+        saveGroups(groups);
+        saveUsers(users);
+
+        res.status(200).json(group);
+      } else {
+        res.status(404).json({ message: "Group or user not found" });
+      }
+    });
+
+    // Decline user to join a group
+    app.put("/api/groups/:id/decline", (req, res) => {
+      const groupId = req.params.id;
+      const userId = req.body.userId;
+
+      const group = groups.find((group) => group.id === groupId);
+      const user = users.find((user) => user.id === userId);
+
+      if (group && user) {
+        group.pendingUsers = group.pendingUsers.filter((id) => id !== userId);
+        user.interest_groups = user.interest_groups.filter(
+          (id) => id !== groupId
+        );
+        saveGroups(groups);
+        saveUsers(users);
+        res.status(200).json(group);
+      } else {
+        res.status(404).json({ message: "Group not found" });
+      }
+    });
+
+    // Update group adminId to "super"
+    app.put("/api/groups/:id/admin-to-super", (req, res) => {
+      const groupId = req.params.id;
+
+      const group = groups.find((group) => group.id === groupId);
+
+      console.log(group);
+
+      if (group) {
+        group.adminId = "super";
+        saveGroups(groups);
+        res
+          .status(200)
+          .json({ message: 'Group adminId updated to "super" successfully' });
+      } else {
+        res.status(404).json({ message: "Group not found" });
+      }
+    });
+
+    // Report a user to the Super Admin
+    app.put("/api/groups/:id/report", (req, res) => {
+      const groupId = req.params.id;
+      const userId = req.body.userId;
+
+      const group = groups.find((group) => group.id === groupId);
+      const user = users.find((user) => user.id === userId);
+
+      if (group && user) {
+        // Add the user to the group's reported_users array
+        if (!group.reported_users.includes(userId)) {
+          group.reported_users.push(userId);
+        }
+
+        // Add the group to the user's reported_by_groups array
+        if (!user.reported_by_groups) {
+          user.reported_by_groups = [];
+        }
+        if (!user.reported_by_groups.includes(groupId)) {
+          user.reported_by_groups.push(groupId);
+        }
+
+        // Save the updated group and user data
+        saveGroups(groups);
+        saveUsers(users);
+
+        console.log(
+          `User ${user.username} has been reported to the Super Admin in group ${groupId}`
+        );
+
+        res.status(200).json(group);
+      } else {
+        res.status(404).json({ message: "Group or user not found" });
+      }
+    });
+
+    // Remove a user from a group
+    app.put("/api/groups/:id/remove", (req, res) => {
+      const groupId = req.params.id;
+      const userId = req.body.userId;
+
+      const group = groups.find((group) => group.id === groupId);
+      const user = users.find((user) => user.id === userId);
+
+      if (group && user) {
+        // Remove the user from the group's users array
+        group.users = group.users.filter((id) => id !== userId);
+
+        // Remove the group from the user's groups array
+        user.groups = user.groups.filter((id) => id !== groupId);
+
+        // Save the updated groups and users
+        saveGroups(groups);
+        saveUsers(users);
+
+        res.status(200).json(group);
       } else {
         res.status(404).json({ message: "Group or user not found" });
       }

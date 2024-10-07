@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private AuthService: AuthService,
-    private GroupService: GroupService,
+    private groupService: GroupService,
     private UserService: UserService,
     private router: Router
   ) {}
@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
       this.originalEmail = this.email;
 
       this.user.groups.forEach((groupId: string) => {
-        this.GroupService.getGroupById(groupId).subscribe((group) => {
+        this.groupService.getGroupById(groupId).subscribe((group) => {
           this.groups.push(group); // Add the group to the list
         });
       });
@@ -110,15 +110,15 @@ export class ProfileComponent implements OnInit {
 
   leaveGroup(groupId: string) {
     if (confirm('Are you sure you want to leave this group?')) {
-      this.GroupService.getGroupById(groupId).subscribe((group) => {
+      this.groupService.getGroupById(groupId).subscribe((group) => {
         const isAdmin = group.adminId === this.user.id;
         console.log(isAdmin);
 
-        this.UserService.removeUserFromGroup(groupId, this.user.id).subscribe(
+        this.groupService.removeUserFromGroup(groupId, this.user.id).subscribe(
           () => {
             if (isAdmin) {
               // Update group adminId to "super" on the server side
-              this.GroupService.updateGroupAdminToSuper(groupId).subscribe(
+              this.groupService.updateGroupAdminToSuper(groupId).subscribe(
                 () => {
                   console.log('Group adminId updated to "super".');
                 },

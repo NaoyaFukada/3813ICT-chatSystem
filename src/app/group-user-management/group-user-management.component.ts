@@ -4,6 +4,7 @@ import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user.service';
 import { NgClass } from '@angular/common';
+import { GroupService } from '../services/group.service';
 
 @Component({
   selector: 'app-group-user-management',
@@ -20,14 +21,17 @@ export class GroupUserManagementComponent implements OnInit {
   selectedUser: any; // The user being banned
   selectedChannel: string = 'Select Channel to Ban';
 
-  constructor(private UserService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private groupService: GroupService
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
   loadUsers() {
-    this.UserService.getUsers().subscribe((users) => {
+    this.userService.getUsers().subscribe((users) => {
       this.users = users;
       this.matchUsers();
     });
@@ -72,50 +76,21 @@ export class GroupUserManagementComponent implements OnInit {
   }
 
   approveInterest(group: any, interest: any) {
-    this.UserService.approveInterest(group.id, interest.id).subscribe(
-      (updatedGroup) => {
+    this.groupService
+      .approveInterest(group.id, interest.id)
+      .subscribe((updatedGroup) => {
         this.selectedGroup = updatedGroup;
         this.matchUsers();
-      }
-    );
+      });
   }
 
   declineInterest(group: any, interest: any) {
-    this.UserService.declineInterest(group.id, interest.id).subscribe(
-      (updatedGroup) => {
+    this.groupService
+      .declineInterest(group.id, interest.id)
+      .subscribe((updatedGroup) => {
         this.selectedGroup = updatedGroup;
         this.matchUsers();
-      }
-    );
-  }
-
-  banUserFromChannel(group: any, user: any, channelId: string) {
-    if (channelId && channelId !== 'Select Channel to Ban') {
-      console.log(`Banning user ${user.username} from channel ${channelId}`);
-      this.UserService.banUserFromChannel(
-        group.id,
-        user.id,
-        channelId
-      ).subscribe(
-        (updatedGroup) => {
-          console.log('Updated Group after banning user:', updatedGroup);
-          console.log(this.selectedGroup);
-
-          // Ensure the selectedGroup object is reassigned
-          this.selectedGroup = { ...updatedGroup };
-
-          this.matchUsers();
-          this.selectedChannel = 'Select Channel to Ban';
-
-          console.log('User banned from channel:', channelId);
-        },
-        (error) => {
-          console.error('Error banning user from channel:', error);
-        }
-      );
-    } else {
-      console.error('No channel selected for banning.');
-    }
+      });
   }
 
   removeUserFromGroup(group: any, user: any): void {
@@ -124,7 +99,7 @@ export class GroupUserManagementComponent implements OnInit {
         `Are you sure you want to remove ${user.username} from ${group.groupname}?`
       )
     ) {
-      this.UserService.removeUserFromGroup(group.id, user.id).subscribe(
+      this.groupService.removeUserFromGroup(group.id, user.id).subscribe(
         (updatedGroup) => {
           console.log('User removed from group:', updatedGroup);
 
@@ -147,7 +122,7 @@ export class GroupUserManagementComponent implements OnInit {
         `Are you sure you want to report ${user.username} to the Super Admin?`
       )
     ) {
-      this.UserService.reportUserToSuperAdmin(group.id, user.id).subscribe(
+      this.groupService.reportUserToSuperAdmin(group.id, user.id).subscribe(
         (updatedGroup) => {
           console.log('User reported to Super Admin:', updatedGroup);
 

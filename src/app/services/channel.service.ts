@@ -11,7 +11,12 @@ export class ChannelService {
 
   constructor(private http: HttpClient) {}
 
-  // Add new channel
+  // Get channel detail by it's id
+  getChannelById(channelId: string): Observable<Channel> {
+    return this.http.get<Channel>(`${this.URL}/channels/${channelId}`);
+  }
+
+  // Add a new channel
   addChannel(
     groupId: string,
     channel: {
@@ -26,11 +31,6 @@ export class ChannelService {
       `${this.URL}/groups/${groupId}/channels`,
       channel
     );
-  }
-
-  // Get channel detail by it's id
-  getChannelById(channelId: string): Observable<Channel> {
-    return this.http.get<Channel>(`${this.URL}/channels/${channelId}`);
   }
 
   // Update channel name
@@ -51,14 +51,22 @@ export class ChannelService {
     );
   }
 
-  // Approve user from channel
+  // Request to join a channel
+  requestToJoinChannel(channelId: string, userId: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.URL}/channels/${channelId}/requestToJoin`,
+      { userId }
+    );
+  }
+
+  // Approve user to join channel
   approveUserForChannel(channelId: string, userId: string): Observable<any> {
     return this.http.put<any>(`${this.URL}/channels/${channelId}/approveUser`, {
       userId,
     });
   }
 
-  // Decline user from channel
+  // Decline user request to join channel
   declineUserForChannel(channelId: string, userId: string): Observable<any> {
     return this.http.put<any>(`${this.URL}/channels/${channelId}/declineUser`, {
       userId,
@@ -70,13 +78,5 @@ export class ChannelService {
     return this.http.put<any>(`${this.URL}/channels/${channelId}/banUser`, {
       userId,
     });
-  }
-
-  // Request to join a channel
-  requestToJoinChannel(channelId: string, userId: string): Observable<any> {
-    return this.http.put<any>(
-      `${this.URL}/channels/${channelId}/requestToJoin`,
-      { userId }
-    );
   }
 }

@@ -8,7 +8,19 @@ module.exports = {
     saveUsers,
     saveChannels
   ) => {
-    // API route to add a new channel to a specific group and update the user
+    // Get channel detail by its id
+    app.get("/api/channels/:id", (req, res) => {
+      const channelId = req.params.id;
+      const channel = channels.find((channel) => channel.id === channelId);
+
+      if (channel) {
+        res.status(200).json(channel);
+      } else {
+        res.status(404).json({ message: "Channel not found" });
+      }
+    });
+
+    // Add a new channel to a specific group and update the user
     app.post("/api/groups/:id/channels", (req, res) => {
       const groupId = req.params.id;
       const { id, name, users, pendingUsers, banned_users } = req.body; // Destructure channel properties from the request body
@@ -41,19 +53,7 @@ module.exports = {
       }
     });
 
-    // API route to get channel detail by its id
-    app.get("/api/channels/:id", (req, res) => {
-      const channelId = req.params.id;
-      const channel = channels.find((channel) => channel.id === channelId);
-
-      if (channel) {
-        res.status(200).json(channel);
-      } else {
-        res.status(404).json({ message: "Channel not found" });
-      }
-    });
-
-    // API route to update a channel name by its ID
+    // Update a channel name by its ID
     app.put("/api/channels/:channelId", (req, res) => {
       const channelId = req.params.channelId;
       const { newChannelName } = req.body; // Get the new channel name from the request body
@@ -76,7 +76,7 @@ module.exports = {
       }
     });
 
-    // API route to delete a channel from a specific group
+    // Delete a channel from a specific group
     app.delete("/api/groups/:id/channels/:channelId", (req, res) => {
       const groupId = req.params.id;
       const channelId = req.params.channelId;
@@ -109,7 +109,51 @@ module.exports = {
       }
     });
 
-    // API route to update a channel
+    // Request to join a channel
+    app.put("/api/channels/:channelId/requestToJoin", (req, res) => {
+      const { channelId } = req.params;
+      const { userId } = req.body; // Get the user ID from the request body
+
+      // Find the channel by ID
+      const channelIndex = channels.findIndex(
+        (channel) => channel.id === channelId
+      );
+      if (channelIndex === -1) {
+        return res.status(404).json({ message: "Channel not found" });
+      }
+
+      // Find the user by ID
+      const userIndex = users.findIndex((user) => user.id === userId);
+      if (userIndex === -1) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get the channel and user objects
+      const channel = channels[channelIndex];
+      const user = users[userIndex];
+
+      // Add the user to channel's pendingUsers if they are not already there
+      if (!channel.pendingUsers.includes(userId)) {
+        channel.pendingUsers.push(userId);
+      }
+
+      // Add the channel to user's interest_channels if not already present
+      if (!user.interest_channels.includes(channelId)) {
+        user.interest_channels.push(channelId);
+      }
+
+      // Save the updated channels and users back to their JSON files
+      saveChannels(channels);
+      saveUsers(users);
+
+      res.status(200).json({
+        message: "Request to join channel sent",
+        channel,
+        user,
+      });
+    });
+
+    // Approve user request to join a channel
     app.put("/api/channels/:channelId/approveUser", (req, res) => {
       const { channelId } = req.params;
       const { userId } = req.body; // Get the user ID from the request body
@@ -153,6 +197,7 @@ module.exports = {
       res.status(200).json({ user });
     });
 
+    // Decline user request to join channel
     app.put("/api/channels/:channelId/declineUser", (req, res) => {
       const { channelId } = req.params;
       const { userId } = req.body; // Get the user ID from the request body
@@ -190,7 +235,7 @@ module.exports = {
       res.status(200).json({ user });
     });
 
-    // Consolidated API route to ban a user from a channel
+    // Ban a user from a channel
     app.put("/api/channels/:channelId/banUser", (req, res) => {
       const { channelId } = req.params;
       const { userId } = req.body; // Get the user ID from the request body
@@ -230,50 +275,6 @@ module.exports = {
       saveUsers(users);
 
       res.status(200).json({ user });
-    });
-
-    // API route to request to join a channel
-    app.put("/api/channels/:channelId/requestToJoin", (req, res) => {
-      const { channelId } = req.params;
-      const { userId } = req.body; // Get the user ID from the request body
-
-      // Find the channel by ID
-      const channelIndex = channels.findIndex(
-        (channel) => channel.id === channelId
-      );
-      if (channelIndex === -1) {
-        return res.status(404).json({ message: "Channel not found" });
-      }
-
-      // Find the user by ID
-      const userIndex = users.findIndex((user) => user.id === userId);
-      if (userIndex === -1) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      // Get the channel and user objects
-      const channel = channels[channelIndex];
-      const user = users[userIndex];
-
-      // Add the user to channel's pendingUsers if they are not already there
-      if (!channel.pendingUsers.includes(userId)) {
-        channel.pendingUsers.push(userId);
-      }
-
-      // Add the channel to user's interest_channels if not already present
-      if (!user.interest_channels.includes(channelId)) {
-        user.interest_channels.push(channelId);
-      }
-
-      // Save the updated channels and users back to their JSON files
-      saveChannels(channels);
-      saveUsers(users);
-
-      res.status(200).json({
-        message: "Request to join channel sent",
-        channel,
-        user,
-      });
     });
   },
 };
