@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Channel } from '../models/channel.model';
+import { Group } from '../models/group.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,12 +23,12 @@ export class ChannelService {
     channel: {
       id: string;
       name: string;
-      users: string[];
+      channelUsers: string[]; // Renaming users to channelUsers for clarity
       pendingUsers: string[];
       banned_users: string[];
     }
-  ): Observable<Channel> {
-    return this.http.post<Channel>(
+  ): Observable<{ group: Group; newChannel: Channel }> {
+    return this.http.post<{ group: Group; newChannel: Channel }>(
       `${this.URL}/groups/${groupId}/channels`,
       channel
     );

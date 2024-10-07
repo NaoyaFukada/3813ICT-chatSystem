@@ -35,14 +35,14 @@ export class ChannelManagementComponent implements OnInit {
     id: string;
     name: string;
     banned_users: string[];
-    users: string[];
+    channelUsers: string[];
     pendingUsers: string[];
   }[] = []; // Store original channel objects
   channels: {
     id: string;
     name: string;
     banned_users: string[];
-    users: string[];
+    channelUsers: string[];
     pendingUsers: string[];
   }[] = []; // Temporary storage for editing channel objects
 
@@ -68,10 +68,10 @@ export class ChannelManagementComponent implements OnInit {
         next: (channelData) => {
           // Store the entire channelData object in channels
           this.channels.push({
-            id: channelData.id,
+            id: channelData._id,
             name: channelData.name,
             banned_users: channelData.banned_users,
-            users: channelData.users,
+            channelUsers: channelData.channelUsers,
             pendingUsers: channelData.pendingUsers,
           });
 
@@ -166,9 +166,9 @@ export class ChannelManagementComponent implements OnInit {
   saveChannel() {
     if (this.newChannelName.trim()) {
       const newChannel = {
-        id: 'channel-' + Math.random().toString(36).substring(2, 15), // Generate a random ID
+        id: '',
         name: this.newChannelName.trim(),
-        users: [this.current_user_id],
+        channelUsers: [this.current_user_id],
         pendingUsers: [],
         banned_users: [],
       };
@@ -178,9 +178,10 @@ export class ChannelManagementComponent implements OnInit {
         this.selectedGroup.id,
         newChannel
       ).subscribe({
-        next: (updatedGroup) => {
-          this.selectedGroup = updatedGroup;
-          this.channels.push(newChannel); // Add the new channel to the editing array
+        next: (response) => {
+          this.selectedGroup = response.group;
+          newChannel.id = response.newChannel._id.toString();
+          this.channels.push(newChannel);
           console.log('New channel added:', newChannel.name);
           this.newChannelName = '';
           this.addingChannel = false;

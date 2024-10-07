@@ -48,7 +48,7 @@ export class ChannelUserManagementComponent implements OnInit {
     );
 
     // Map users with their full user objects (including id and username)
-    this.selectedChannel.users = this.selectedChannel.users.map(
+    this.selectedChannel.users = this.selectedChannel.channelUsers.map(
       (userId: string) => {
         const user = this.users.find((user) => user.id === userId);
         return user
@@ -68,17 +68,22 @@ export class ChannelUserManagementComponent implements OnInit {
 
   // Approve a user to join a channel
   approveUser(user: any) {
+    console.log(this.selectedChannel.id);
     this.ChannelService.approveUserForChannel(
       this.selectedChannel.id,
       user.id
     ).subscribe((response) => {
+      console.log('approved users');
       const approvedUser = response.user;
+      console.log(approvedUser);
 
       // Add the approved user to the selectedChannel.users array
       this.selectedChannel.users.push({
         id: approvedUser.id,
         username: approvedUser.username,
       });
+
+      console.log(this.selectedChannel);
 
       // Remove the user from the interestedUsers array
       this.interestedUsers = this.interestedUsers.filter(

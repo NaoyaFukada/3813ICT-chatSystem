@@ -89,7 +89,7 @@ export class ChatComponent implements OnInit {
 
   selectChannel(channel: any) {
     this.selectedChannel = channel;
-    this.isUserInChannel = channel.users.includes(this.currentUser.id);
+    this.isUserInChannel = channel.channelUsers.includes(this.currentUser.id);
     this.isUserPendingApproval = channel.pendingUsers.includes(
       this.currentUser.id
     );
@@ -98,8 +98,9 @@ export class ChatComponent implements OnInit {
   }
 
   requestToJoinChannel() {
+    console.log(this.selectedChannel);
     this.ChannelService.requestToJoinChannel(
-      this.selectedChannel.id,
+      this.selectedChannel._id,
       this.currentUser.id
     ).subscribe(
       (response) => {

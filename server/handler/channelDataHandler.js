@@ -1,20 +1,10 @@
-const fs = require("fs");
-const path = require("path");
+// const { MongoClient } = require("mongodb");
 
-const filePath = path.join(__dirname, "../data/channel.json");
+// async function loadChannels() {
+//   const channels = await db.collection("channels").find().toArray();
+//   return channels; // Fetch all channels from MongoDB
+// }
 
-function loadChannels() {
-  if (fs.existsSync(filePath)) {
-    return JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  }
-  return [];
-}
-
-function saveChannels(groups) {
-  fs.writeFileSync(filePath, JSON.stringify(groups, null, 2));
-}
-
-module.exports = {
-  loadChannels,
-  saveChannels,
-};
+// module.exports = {
+//   loadChannels,
+// };

@@ -1,57 +1,21 @@
 [
   {
-    "id": "group-gsnwukea9n4",
-    "groupname": "Cool Group",
+    "id": "group-vht97jcuqy8",
+    "groupname": "New Group",
     "adminId": "user-rv4uafl3dt",
     "channels": [
-      "channel-tqct498fca9",
-      "channel-qx16ut4cnk"
+      "6703854b368e781facb23842"
     ],
     "users": [
       "user-rv4uafl3dt",
-      "user-rw4uafl3dt"
+      "user-x587q5gd7hd",
+      "user-yhym6a8ok2h",
+      "user-uqnfbwxktfc",
+      "user-z0mj7osxu6",
+      "user-vq53nlnmtwn",
+      "user-rzfoplp7gf"
     ],
     "pendingUsers": [],
     "reported_users": []
-  },
-  {
-    "id": "group-q2xnwe91y3",
-    "groupname": "awesome group 2",
-    "adminId": "user-rw4uafl3dt",
-    "channels": [],
-    "users": [
-      "user-rw4uafl3dt",
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [],
-    "reported_users": []
-  },
-  {
-    "id": "group-d7bq7ig4iie",
-    "groupname": "Dream Group",
-    "adminId": "user-rv4uafl3dt",
-    "channels": [],
-    "users": [
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [],
-    "reported_users": []
-  },
-  {
-    "id": "group-5gk3736sps6",
-    "groupname": "test",
-    "adminId": "user-rv4uafl3dt",
-    "channels": [
-      "channel-sc4b3hdxyg",
-      "channel-3l70v3bl7j5",
-      "channel-yj3fr43ebe7"
-    ],
-    "users": [
-      "user-rv4uafl3dt"
-    ],
-    "pendingUsers": [],
-    "reported_users": [
-      "user-rw4uafl3dt"
-    ]
   }
 ]
