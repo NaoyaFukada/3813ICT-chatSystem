@@ -1,7 +1,15 @@
 const express = require("express"); // Import express.js
 const app = express(); // Create an instance of Express
+const cors = require("cors");
+const http = require("http").Server(app); // Create HTTP server
 const PORT = 3000;
-var cors = require("cors");
+const io = require("socket.io")(http, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"],
+  },
+});
+const sockets = require("./socket.js"); // Import socket logic
 const { MongoClient } = require("mongodb");
 const { loadUsers, saveUsers } = require("./handler/userDataHandler");
 const { loadGroups, saveGroups } = require("./handler/groupDataHandler");
@@ -51,12 +59,16 @@ async function main() {
       users,
       groups,
       channelsCollection,
+      chatHistoryCollection,
       saveGroups,
       saveUsers
     );
 
-    // Start the server
-    app.listen(PORT, () => {
+    // Initialize Socket.IO
+    sockets.connect(io, chatHistoryCollection);
+
+    // Start the server using http, not app
+    http.listen(PORT, () => {
       console.log(`Server started on http://localhost:${PORT}`);
     });
   } catch (err) {

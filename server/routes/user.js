@@ -5,6 +5,22 @@ module.exports = {
       res.json(users);
     });
 
+    // Get user by ID
+    app.get("/api/users/:id", (req, res) => {
+      const userId = req.params.id;
+
+      // Find the user by ID
+      const user = users.find((user) => user.id === userId);
+
+      if (user) {
+        res
+          .status(200)
+          .json({ id: user.id, username: user.username, email: user.email });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    });
+
     // Add a new user
     app.post("/api/users", (req, res) => {
       const newUser = req.body;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Channel } from '../models/channel.model';
 import { Group } from '../models/group.model';
@@ -12,7 +12,7 @@ export class ChannelService {
 
   constructor(private http: HttpClient) {}
 
-  // Get channel detail by it's id
+  // Get channel details by its ID
   getChannelById(channelId: string): Observable<Channel> {
     return this.http.get<Channel>(`${this.URL}/channels/${channelId}`);
   }
@@ -23,7 +23,7 @@ export class ChannelService {
     channel: {
       id: string;
       name: string;
-      channelUsers: string[]; // Renaming users to channelUsers for clarity
+      channelUsers: string[];
       pendingUsers: string[];
       banned_users: string[];
     }
@@ -39,10 +39,9 @@ export class ChannelService {
     channelId: string,
     newChannelName: string
   ): Observable<Channel> {
-    return this.http.put<Channel>(
-      `${this.URL}/channels/${channelId}`, // Use only the channel ID in the URL
-      { newChannelName } // Sending the new channel name in the request body
-    );
+    return this.http.put<Channel>(`${this.URL}/channels/${channelId}`, {
+      newChannelName,
+    });
   }
 
   // Delete channel

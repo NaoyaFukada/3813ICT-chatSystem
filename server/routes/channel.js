@@ -1,7 +1,17 @@
 const { ObjectId } = require("mongodb");
 
 module.exports = {
-  route: (app, users, groups, channelsCollection, saveGroups, saveUsers) => {
+  route: (
+    app,
+    users,
+    groups,
+    channelsCollection,
+    chatHistoryCollection,
+    saveGroups,
+    saveUsers
+  ) => {
+    // META DATA:
+
     // Get channel details by its ID
     app.get("/api/channels/:id", async (req, res) => {
       const { id } = req.params;
@@ -335,6 +345,22 @@ module.exports = {
       } catch (err) {
         console.error("Error banning user:", err);
         res.status(500).json({ message: "Failed to ban user", error: err });
+      }
+    });
+
+    // CHAT HISTORY:
+    // Get chat history for a specific channel
+    app.get("/api/channels/:channelId/messages", async (req, res) => {
+      const { channelId } = req.params;
+
+      try {
+        const messages = await chatHistoryCollection
+          .find({ channelId: channelId })
+          .toArray();
+        console.log(messages);
+        res.status(200).json(messages);
+      } catch (error) {
+        res.status(500).json({ message: "Failed to fetch messages", error });
       }
     });
   },

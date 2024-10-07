@@ -4,7 +4,8 @@
     "groupname": "New Group",
     "adminId": "user-rv4uafl3dt",
     "channels": [
-      "6703854b368e781facb23842"
+      "6703854b368e781facb23842",
+      "6703a268416a8f30deb4f6ea"
     ],
     "users": [
       "user-rv4uafl3dt",
@@ -14,6 +15,17 @@
       "user-z0mj7osxu6",
       "user-vq53nlnmtwn",
       "user-rzfoplp7gf"
+    ],
+    "pendingUsers": [],
+    "reported_users": []
+  },
+  {
+    "id": "group-4bd7is8w7ns",
+    "groupname": "Test",
+    "adminId": "user-rv4uafl3dt",
+    "channels": [],
+    "users": [
+      "user-rv4uafl3dt"
     ],
     "pendingUsers": [],
     "reported_users": []
