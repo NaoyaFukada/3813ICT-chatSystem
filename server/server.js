@@ -1,6 +1,9 @@
-const express = require("express"); // Import express.js
-const app = express(); // Create an instance of Express
+const express = require("express");
+const path = require("path");
+const formidable = require("formidable");
 const cors = require("cors");
+const fs = require("fs");
+const app = express(); // Create an instance of Express
 const http = require("http").Server(app); // Create HTTP server
 const PORT = 3000;
 const io = require("socket.io")(http, {
@@ -22,6 +25,9 @@ let db;
 // Parse URL-encoded bodies and JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Serve static files (uploaded images)
+app.use("/images", express.static(path.join(__dirname, "./userimages")));
 
 // This will allow requests only from the frontend of this application
 var corsOptions = {

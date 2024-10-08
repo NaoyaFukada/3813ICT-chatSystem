@@ -2,6 +2,7 @@
 
 ```bash
 brew services run mongodb-community
+brew services stop mongodb-community
 ```
 
 1. Install socket.io for frontend
@@ -16,6 +17,7 @@ npm install socket.io-client --save
 npm install express --save
 npm install socket.io --save
 npm install cors --save
+npm install formidable
 ```
 
 3. Install mongoDB
@@ -27,7 +29,9 @@ npm install mongodb
 Use mongosh on terminal
 
 ```bash
+mongosh
 use chatApp
 db.channels.find();
+db.chatHistory.find();
 db.channels.deleteMany({})
 ```

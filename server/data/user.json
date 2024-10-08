@@ -1,12 +1,17 @@
 [
   {
     "id": "user-rv4uafl3dt",
-    "username": "super",
-    "email": "super@gmail.com",
+    "username": [
+      "super"
+    ],
+    "email": [
+      "super@gmail.com"
+    ],
     "password": "123",
     "roles": [
       "Super Admin"
     ],
+    "profile_img_path": "profile_image_user-rv4uafl3dt.jpeg",
     "groups": [
       "group-vht97jcuqy8",
       "group-4bd7is8w7ns"
@@ -14,7 +19,8 @@
     "interest_groups": [],
     "channels": [
       "6703854b368e781facb23842",
-      "6703a268416a8f30deb4f6ea"
+      "6703a268416a8f30deb4f6ea",
+      "67048ebdaafc60768bcedcf6"
     ],
     "interest_channels": [],
     "banned_channels": [],
@@ -25,6 +31,7 @@
     "username": "Naoya",
     "email": "",
     "password": "password",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],
@@ -42,6 +49,7 @@
     "username": "a",
     "email": "",
     "password": "a",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],
@@ -64,6 +72,7 @@
     "username": "b",
     "email": "",
     "password": "b",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],
@@ -84,6 +93,7 @@
     "username": "c",
     "email": "",
     "password": "c",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],
@@ -101,6 +111,7 @@
     "username": "d",
     "email": "",
     "password": "d",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],
@@ -118,6 +129,7 @@
     "username": "e",
     "email": "",
     "password": "e",
+    "profile_img_path": "",
     "roles": [
       "Chat User"
     ],

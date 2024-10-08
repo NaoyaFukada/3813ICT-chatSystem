@@ -24,6 +24,32 @@
         </div>
         <hr class="bg-light" />
         <form id="profileForm">
+          <!-- Profile Picture -->
+          <div class="mb-3 text-center">
+            <img
+              *ngIf="profilePictureUrl"
+              [src]="profilePictureUrl"
+              class="img-thumbnail rounded-circle"
+              alt="Profile Picture"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+            <img
+              *ngIf="!profilePictureUrl"
+              src="assets/default-profile.jpg"
+              class="img-thumbnail rounded-circle"
+              alt="Default Profile Picture"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+            <input
+              *ngIf="isEditing"
+              id="profileImage"
+              name="profilePicture"
+              type="file"
+              class="form-control bg-dark text-white mt-4"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input

@@ -1,3 +1,7 @@
+const formidable = require("formidable");
+const path = require("path");
+const fs = require("fs");
+
 module.exports = {
   route: (app, users, groups, saveGroups, saveUsers) => {
     // Get all users
@@ -62,33 +66,83 @@ module.exports = {
       }
     });
 
-    // Update user profile
+    // Update user profile (with file upload)
     app.put("/api/users/:id", (req, res) => {
       const userId = req.params.id;
-      const { username, email } = req.body;
+      let newFileName;
 
-      const user = users.find((user) => user.id === userId);
+      // Create a Formidable form instance to handle the upload
+      const form = new formidable.IncomingForm({
+        uploadDir: "./userimages",
+        keepExtensions: true, // Keep file extensions
+      });
 
-      if (user) {
-        // Check if the username is already taken by another user
-        const existingUser = users.find(
-          (u) => u.username === username && u.id !== userId
-        );
-        if (existingUser) {
-          return res.status(400).json({
-            message: "Username already exists. Please choose another one.",
-          });
+      console.log("Form:", form);
+
+      form.on("error", (err) => {
+        return res
+          .status(500)
+          .json({ message: "Error processing the file", err });
+      });
+
+      console.log("form.originalFilename", form.originalFilename);
+
+      // File processing
+      form.on("fileBegin", (name, file) => {
+        const ext = path.extname(file.originalFilename).toLowerCase(); // Extract file extension
+        newFileName = `profile_image_${userId}${ext}`; // Create a new file name
+        file.filepath = path.join(form.uploadDir, newFileName); // Set the correct file path
+      });
+
+      form.parse(req, (err, fields, files) => {
+        console.log("Fields:", fields); // Log the fields for debugging
+        console.log("Files:", files);
+
+        if (err) {
+          return res.status(500).json({ message: "Error uploading file", err });
         }
 
-        // Update the user's profile
-        user.username = username;
-        user.email = email;
+        const file = files.profilePicture; // Ensure "profilePicture" is the correct field name
+        const user = users.find((user) => user.id === userId);
 
-        saveUsers(users); // Save the updated users data
-        res.status(200).json(user);
-      } else {
-        res.status(404).json({ message: "User not found" });
-      }
+        if (user) {
+          const existingUser = users.find(
+            (u) => u.username === fields.username && u.id !== userId
+          );
+          if (existingUser) {
+            return res.status(400).json({
+              message: "Username already exists. Please choose another one.",
+            });
+          }
+
+          // Validate email format
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailPattern.test(fields.email)) {
+            return res.status(400).json({ message: "Invalid email address." });
+          }
+
+          // Update user fields
+          user.username = fields.username || user.username;
+          user.email = fields.email || user.email;
+
+          console.log("File aru", file);
+
+          if (file) {
+            user.profile_img_path = newFileName;
+            console.log(newFileName);
+          }
+
+          console.log(users);
+
+          // Save updated users
+          saveUsers(users);
+
+          // Return the updated user
+          res.status(200).json(user);
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      });
     });
 
     // Delete a user

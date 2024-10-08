@@ -46,4 +46,12 @@ export class UserService {
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.URL}/users/${userId}`);
   }
+
+  // Update user profile
+  updateUserProfileWithImage(
+    userId: string,
+    formData: FormData
+  ): Observable<User> {
+    return this.http.put<User>(`${this.URL}/users/${userId}`, formData);
+  }
 }

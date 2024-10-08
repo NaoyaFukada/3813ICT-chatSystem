@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { GroupService } from '../services/group.service';
 import { UserService } from '../services/user.service';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, NgFor],
+  imports: [FormsModule, NgFor, NgIf],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
@@ -20,9 +20,12 @@ export class ProfileComponent implements OnInit {
   role: string = '';
   isEditing: boolean = false;
   groups: any[] = [];
-  // Store original profile values to reset on error
+  profilePicture: File | null = null; // File to store the uploaded image
+  profilePictureUrl: string = ''; // For preview or current image URL
   private originalUsername: string = '';
   private originalEmail: string = '';
+  private originalProfilePictureUrl: string = ''; // Store original profile picture URL
+  private BASE_URL = 'http://localhost:3000/images/';
 
   constructor(
     private AuthService: AuthService,
@@ -39,19 +42,23 @@ export class ProfileComponent implements OnInit {
       this.username = this.user.username;
       this.email = this.user.email;
       this.role = this.user.roles;
+      // Set profile picture URL, assuming it's served from your backend
+      this.profilePictureUrl =
+        `${this.BASE_URL}${this.user.profile_img_path}` || '';
 
-      // Store original values
+      // Store original values for comparison
       this.originalUsername = this.username;
       this.originalEmail = this.email;
+      this.originalProfilePictureUrl = this.profilePictureUrl;
 
       this.user.groups.forEach((groupId: string) => {
         this.groupService.getGroupById(groupId).subscribe((group) => {
-          this.groups.push(group); // Add the group to the list
+          this.groups.push(group); // Add group to the list
         });
       });
     }
+
     if (!this.user) {
-      // Redirect to the login page
       this.router.navigate(['/login']);
       alert('You need to be logged in to see this page');
     }
@@ -64,47 +71,88 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: any) {
+    this.profilePicture = event.target.files[0]; // Store the selected file
+    if (this.profilePicture) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profilePictureUrl = e.target.result; // For image preview
+      };
+      reader.readAsDataURL(this.profilePicture);
+    }
+  }
+
+  validateProfileInput(): boolean {
+    if (!this.username || !this.email) {
+      alert('Username and email are required.');
+      return false;
+    }
+
+    // Email validation (basic format check)
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.email)) {
+      alert('Please enter a valid email address.');
+      return false;
+    }
+
+    // Check for username uniqueness
+    let isValid = true;
+    this.UserService.getUsers().subscribe((users) => {
+      const existingUser = users.find(
+        (u) => u.username === this.username && u.id !== this.user.id
+      );
+      if (existingUser) {
+        alert('Username already exists. Please choose a different one.');
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
   saveProfile() {
-    // Check if the username or email has changed
-    if (
-      this.username === this.originalUsername &&
-      this.email === this.originalEmail
-    ) {
+    if (!this.validateProfileInput()) {
+      this.resetProfileFields();
+      return; // If validation fails, return early
+    }
+
+    // Check if the username, email, or profile picture has changed
+    const isUsernameChanged = this.username !== this.originalUsername;
+    const isEmailChanged = this.email !== this.originalEmail;
+    const isProfilePictureChanged =
+      this.profilePictureUrl !== this.originalProfilePictureUrl;
+
+    if (!isUsernameChanged && !isEmailChanged && !isProfilePictureChanged) {
       // No changes, close the edit mode
       this.isEditing = false;
       return;
     }
 
     if (confirm('Are you sure you want to save the changes to your profile?')) {
-      // Check for username uniqueness
-      this.UserService.getUsers().subscribe((users) => {
-        const existingUser = users.find(
-          (u) => u.username === this.username && u.id !== this.user.id
-        );
-        if (existingUser) {
-          this.resetProfileFields();
-          alert('Username already exists. Please choose a different one.');
-        } else {
-          // Proceed to update the user's information
-          this.UserService.updateUserProfile(this.user.id, {
-            username: this.username,
-            email: this.email,
-          }).subscribe(
-            (updatedUser) => {
-              alert('Profile updated successfully.');
-              this.user = updatedUser;
-              this.originalUsername = this.username;
-              this.originalEmail = this.email;
-              this.AuthService.updateUserInfo(this.user);
-            },
-            (error) => {
-              console.error('Error updating profile:', error);
-              alert('Failed to update profile. Please try again.');
-              this.resetProfileFields();
-            }
-          );
+      const formData = new FormData();
+      formData.append('username', this.username);
+      formData.append('email', this.email);
+
+      if (isProfilePictureChanged && this.profilePicture) {
+        formData.append('profilePicture', this.profilePicture); // Add the profile picture to form data
+      }
+
+      this.UserService.updateUserProfileWithImage(
+        this.user.id,
+        formData
+      ).subscribe(
+        (updatedUser) => {
+          alert('Profile updated successfully.');
+          this.user = updatedUser;
+          this.AuthService.updateUserInfo(this.user); // Update the user info in local storage
+          this.profilePictureUrl = `${this.BASE_URL}${updatedUser.profile_img_path}`; // Update the profile image URL with the new path
+          this.isEditing = false; // Close edit mode
+        },
+        (error) => {
+          console.error('Error updating profile:', error);
+          alert('Failed to update profile. Please try again.');
         }
-      });
+      );
     }
   }
 
@@ -112,21 +160,16 @@ export class ProfileComponent implements OnInit {
     if (confirm('Are you sure you want to leave this group?')) {
       this.groupService.getGroupById(groupId).subscribe((group) => {
         const isAdmin = group.adminId === this.user.id;
-        console.log(isAdmin);
 
         this.groupService.removeUserFromGroup(groupId, this.user.id).subscribe(
           () => {
             if (isAdmin) {
-              // Update group adminId to "super" on the server side
               this.groupService.updateGroupAdminToSuper(groupId).subscribe(
                 () => {
                   console.log('Group adminId updated to "super".');
                 },
                 (error) => {
-                  console.error(
-                    'Error updating group adminId to "super":',
-                    error
-                  );
+                  console.error('Error updating group adminId:', error);
                 }
               );
             }
@@ -136,7 +179,7 @@ export class ProfileComponent implements OnInit {
             this.user.groups = this.user.groups.filter(
               (id: string) => id !== groupId
             );
-            this.AuthService.updateUserInfo(this.user);
+            this.AuthService.updateUserInfo(this.user); // Update local user info
           },
           (error) => {
             console.error('Error leaving group:', error);
@@ -169,5 +212,6 @@ export class ProfileComponent implements OnInit {
   private resetProfileFields() {
     this.username = this.originalUsername;
     this.email = this.originalEmail;
+    this.profilePictureUrl = this.originalProfilePictureUrl;
   }
 }

@@ -33,6 +33,7 @@ export class SignupComponent {
       username: this.username,
       email: '',
       password: this.password,
+      profile_img_path: '',
       roles: ['Chat User'],
       groups: [],
       interest_groups: [],

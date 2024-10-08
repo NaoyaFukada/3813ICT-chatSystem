@@ -3,6 +3,7 @@ export interface User {
   username: string;
   email: string;
   password: string;
+  profile_img_path: string;
   roles: string[]; // e.g., ['Super_Admin', 'Group_Admin', 'Chat_user']
   groups: string[];
   interest_groups: string[];
