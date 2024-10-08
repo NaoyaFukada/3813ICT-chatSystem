@@ -1,21 +1,12 @@
 [
   {
     "id": "user-rv4uafl3dt",
-    "username": [
-      "super"
-    ],
-    "email": [
-      "super@gmail.com"
-    ],
+    "username": "super",
+    "email": "super@gmail.com",
     "password": "123",
-    "roles": [
-      "Super Admin"
-    ],
+    "roles": ["Super Admin"],
     "profile_img_path": "profile_image_user-rv4uafl3dt.jpeg",
-    "groups": [
-      "group-vht97jcuqy8",
-      "group-4bd7is8w7ns"
-    ],
+    "groups": ["group-vht97jcuqy8", "group-4bd7is8w7ns"],
     "interest_groups": [],
     "channels": [
       "6703854b368e781facb23842",
@@ -32,12 +23,8 @@
     "email": "",
     "password": "password",
     "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
     "channels": [],
     "interest_channels": [],
@@ -49,22 +36,13 @@
     "username": "a",
     "email": "",
     "password": "a",
-    "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "profile_img_path": "profile_image_user-yhym6a8ok2h.webp",
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
-    "channels": [
-      "6703854b368e781facb23842",
-      "6703a268416a8f30deb4f6ea"
-    ],
+    "channels": ["6703854b368e781facb23842", "6703a268416a8f30deb4f6ea"],
     "interest_channels": [],
-    "banned_channels": [
-      "6703854b368e781facb23842"
-    ],
+    "banned_channels": ["6703854b368e781facb23842"],
     "reported_in_groups": []
   },
   {
@@ -73,17 +51,10 @@
     "email": "",
     "password": "b",
     "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
-    "channels": [
-      "6703854b368e781facb23842",
-      "6703a268416a8f30deb4f6ea"
-    ],
+    "channels": ["6703854b368e781facb23842", "6703a268416a8f30deb4f6ea"],
     "interest_channels": [],
     "banned_channels": [],
     "reported_in_groups": []
@@ -94,12 +65,8 @@
     "email": "",
     "password": "c",
     "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
     "channels": [],
     "interest_channels": [],
@@ -112,12 +79,8 @@
     "email": "",
     "password": "d",
     "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
     "channels": [],
     "interest_channels": [],
@@ -130,12 +93,8 @@
     "email": "",
     "password": "e",
     "profile_img_path": "",
-    "roles": [
-      "Chat User"
-    ],
-    "groups": [
-      "group-vht97jcuqy8"
-    ],
+    "roles": ["Chat User"],
+    "groups": ["group-vht97jcuqy8"],
     "interest_groups": [],
     "channels": [],
     "interest_channels": [],

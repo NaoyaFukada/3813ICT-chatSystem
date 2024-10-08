@@ -83,15 +83,8 @@ export class ProfileComponent implements OnInit {
   }
 
   validateProfileInput(): boolean {
-    if (!this.username || !this.email) {
-      alert('Username and email are required.');
-      return false;
-    }
-
-    // Email validation (basic format check)
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(this.email)) {
-      alert('Please enter a valid email address.');
+    if (!this.username) {
+      alert('Username are required.');
       return false;
     }
 

@@ -17,9 +17,12 @@ module.exports = {
       const user = users.find((user) => user.id === userId);
 
       if (user) {
-        res
-          .status(200)
-          .json({ id: user.id, username: user.username, email: user.email });
+        res.status(200).json({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          profile_img_path: user.profile_img_path,
+        });
       } else {
         res.status(404).json({ message: "User not found" });
       }
@@ -115,10 +118,12 @@ module.exports = {
             });
           }
 
-          // Validate email format
-          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailPattern.test(fields.email)) {
-            return res.status(400).json({ message: "Invalid email address." });
+          // Ensure username and email are strings, not arrays
+          if (Array.isArray(fields.username)) {
+            fields.username = fields.username[0];
+          }
+          if (Array.isArray(fields.email)) {
+            fields.email = fields.email[0];
           }
 
           // Update user fields

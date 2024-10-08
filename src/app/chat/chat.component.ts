@@ -3,16 +3,17 @@ import { GroupService } from '../services/group.service';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { Group } from '../models/group.model';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ChannelService } from '../services/channel.service';
 import { SocketService } from '../services/socket.service';
 import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule],
+  imports: [NgFor, NgIf, FormsModule, NgClass, CommonModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
@@ -27,8 +28,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   chatMessages: any[] = [];
   messageContent: string = '';
 
-  // Create a cache (map) to store userId -> username
-  userCache: { [key: string]: string } = {};
+  // Create a cache (map) to store userId -> { username, profile_img_path }
+  userCache: { [key: string]: { username: string; profile_img_path: string } } =
+    {};
 
   constructor(
     private GroupService: GroupService,
@@ -74,9 +76,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.groups = data.filter((group) =>
         group.users.includes(this.currentUser.id)
       );
-      if (this.groups.length > 0) {
-        this.selectGroup(this.groups[0].id);
-      }
+      // No automatic group/channel selection
+      this.selectedGroup = null;
+      this.selectedChannel = null;
     });
   }
 
@@ -89,9 +91,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.ChannelService.getChannelById(channelId).subscribe(
           (channel) => {
             this.channels.push(channel);
-            if (this.channels.length === 1) {
-              this.selectChannel(this.channels[0]);
-            }
           },
           (error) => {
             console.error(
@@ -101,11 +100,9 @@ export class ChatComponent implements OnInit, OnDestroy {
           }
         );
       });
-      if (this.channels.length === 0) {
-        this.selectedChannel = null;
-        this.isUserInChannel = false;
-        this.isUserPendingApproval = false;
-      }
+      this.selectedChannel = null;
+      this.isUserInChannel = false;
+      this.isUserPendingApproval = false;
     }
   }
 
@@ -128,32 +125,35 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadChatMessages(channelId: string) {
     this.SocketService.getChatMessages(channelId).subscribe((messages) => {
       this.chatMessages = messages;
+      console.log(messages);
       this.chatMessages.forEach((msg) => {
-        this.getUsername(msg.userId);
+        this.getUserInfo(msg.userId);
       });
     });
   }
 
-  // Function to get the username from the cache or make an HTTP request if necessary
-  getUsername(userId: string) {
-    // Check if the username is already in the cache
+  getUserInfo(userId: string) {
+    console.log('this.userCache', this.userCache);
     if (this.userCache[userId]) {
-      // If it exists, update the message object with the cached username
       this.chatMessages.forEach((msg) => {
         if (msg.userId === userId) {
-          msg.username = this.userCache[userId];
+          console.log(this.userCache[userId].username);
+          msg.username = this.userCache[userId].username;
+          msg.profile_img_path = this.userCache[userId].profile_img_path;
         }
       });
     } else {
-      // If not in cache, fetch from the server
       this.UserService.getUserById(userId).subscribe((user) => {
-        // Store the username in the cache
-        this.userCache[user.id] = user.username;
+        console.log('THis is user', user);
+        this.userCache[user.id] = {
+          username: user.username,
+          profile_img_path: user.profile_img_path,
+        };
 
-        // Update the messages with the newly fetched username
         this.chatMessages.forEach((msg) => {
-          if (msg.userId === userId) {
+          if (msg.userId === user.id) {
             msg.username = user.username;
+            msg.profile_img_path = user.profile_img_path;
           }
         });
       });
@@ -179,15 +179,16 @@ export class ChatComponent implements OnInit, OnDestroy {
   initSocketConnection() {
     this.SocketService.initSocket();
 
-    // Listen for normal chat messages
     this.SocketService.getMessages().subscribe((message: any) => {
       this.chatMessages.push(message);
-      this.getUsername(message.userId); // Load username for new messages
+      this.getUserInfo(message.userId);
     });
 
-    // Listen for system messages (user join/leave events)
-    this.SocketService.getSystemMessages().subscribe((message: any) => {
-      this.chatMessages.push({ message: message.message, system: true });
+    this.SocketService.getSystemMessages().subscribe((systemMessage: any) => {
+      this.chatMessages.push({
+        message: systemMessage.message,
+        system: true, // Mark it as a system message
+      });
     });
   }
 
@@ -199,10 +200,16 @@ export class ChatComponent implements OnInit, OnDestroy {
         message: this.messageContent.trim(),
       };
       this.SocketService.sendMessage(message);
-      console.log(this.SocketService);
       this.messageContent = '';
     } else {
       console.log('No message to send or channel not selected.');
     }
+  }
+
+  // Helper method to check if two messages were sent on the same day
+  isSameDay(timestamp1: string, timestamp2: string): boolean {
+    const date1 = new Date(timestamp1).toDateString();
+    const date2 = new Date(timestamp2).toDateString();
+    return date1 === date2;
   }
 }

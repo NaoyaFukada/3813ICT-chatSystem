@@ -17,9 +17,73 @@
   width: 65%;
 }
 
-/* Additional message styling */
-.message {
+/* Styling for chat messages */
+.message-row {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
   margin-bottom: 10px;
+  width: 100%;
+}
+
+.message-row.left {
+  justify-content: flex-start;
+  max-width: 100%;
+}
+
+.message-row.right {
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+.message-info {
+  display: flex;
+  align-items: center; /* Align username and profile image in the same row */
+  margin-right: 10px;
+}
+
+.message-info small {
+  font-size: 12px;
+  color: #666;
+}
+
+.profile-pic {
+  margin-left: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 60%;
+}
+
+.message-bubble {
+  max-width: 100%; /* Allow bubble to take full width but controlled by the row */
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word; /* Ensure long words break properly */
+  overflow-wrap: break-word;
+}
+
+.message-bubble.mine {
+  background-color: #dcf8c6;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.text-center.text-muted em {
+  display: block;
+  margin: 10px 0;
+  color: #666;
+  font-size: 14px;
 }
 
 /* Input and Send Button Styling */
@@ -85,4 +149,42 @@
 .custom-context-menu ul li:hover {
   background-color: red;
   color: #ffffff;
+}
+
+/* Highlight the selected group */
+.nav-item.bg-primary a {
+  background-color: #007bff !important; /* Bootstrap's 'primary' color */
+  color: #fff !important;
+}
+
+/* Highlight the selected channel */
+.nav-item.bg-info a {
+  background-color: #17a2b8 !important; /* Bootstrap's 'info' color */
+  color: #fff !important;
+}
+
+.message-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-info small {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.system-message {
+  font-style: italic;
+  color: #888;
+  margin: 10px 0;
 }

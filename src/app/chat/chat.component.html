@@ -16,8 +16,17 @@
       <div class="bg-dark text-white p-3 pt-0 overflow-auto" id="group-sidebar">
         <h5 class="text-center bg-dark pt-3">Groups</h5>
         <ul class="nav flex-column">
-          <li class="nav-item" *ngFor="let group of groups">
-            <a class="nav-link text-white" (click)="selectGroup(group.id)">
+          <li
+            class="nav-item"
+            *ngFor="let group of groups"
+            [ngClass]="{ 'bg-primary': group.id === selectedGroup?.id }"
+            style="border-radius: 5px"
+          >
+            <a
+              class="nav-link text-white"
+              (click)="selectGroup(group.id)"
+              [class.active]="group.id === selectedGroup?.id"
+            >
               {{ group.groupname }}
             </a>
           </li>
@@ -31,8 +40,17 @@
       >
         <h5 class="text-center pt-3 bg-secondary">Channels</h5>
         <ul class="nav flex-column">
-          <li class="nav-item" *ngFor="let channel of channels">
-            <a class="nav-link text-white" (click)="selectChannel(channel)">
+          <li
+            class="nav-item"
+            *ngFor="let channel of channels"
+            [ngClass]="{ 'bg-info': channel._id === selectedChannel?._id }"
+            style="border-radius: 5px"
+          >
+            <a
+              class="nav-link text-white"
+              (click)="selectChannel(channel)"
+              [class.active]="channel._id === selectedChannel?._id"
+            >
               {{ channel.name }}
             </a>
           </li>
@@ -52,42 +70,105 @@
         </div>
 
         <div class="flex-grow-1 p-3 overflow-auto">
-          <div *ngIf="isUserInChannel; else requestToJoin">
-            <!-- Display chat messages, differentiating system and normal messages -->
-            <div *ngFor="let message of chatMessages">
-              <!-- System message (join/leave event) -->
-              <div *ngIf="message.system" class="text-center text-muted">
-                <em>{{ message.message }}</em>
-              </div>
-              <!-- Normal chat message -->
-              <div *ngIf="!message.system">
-                <strong>{{ message.username }}:</strong> {{ message.message }}
+          <!-- Check if a group and a channel are selected -->
+          <div *ngIf="selectedGroup && selectedChannel; else emptyState">
+            <!-- Chat Messages -->
+            <div *ngIf="isUserInChannel; else requestToJoin">
+              <div *ngFor="let message of chatMessages; let i = index">
+                <!-- Show Date Divider -->
+                <div
+                  *ngIf="
+                    i === 0 ||
+                    !isSameDay(chatMessages[i - 1].timestamp, message.timestamp)
+                  "
+                  class="text-center text-muted"
+                >
+                  <em>{{ message.timestamp | date : "EEE, MMM d" }}</em>
+                </div>
+
+                <!-- System Message in the center -->
+                <div *ngIf="message.system" class="system-message text-center">
+                  <em>{{ message.message }}</em>
+                </div>
+
+                <!-- Other User's Message -->
+                <div
+                  *ngIf="!message.system && message.userId !== currentUser.id"
+                  class="message-row left"
+                >
+                  <!-- Display Username and Profile Picture on the same row -->
+                  <div class="message-info">
+                    <img
+                      class="profile-pic"
+                      [src]="
+                        message.profile_img_path
+                          ? 'http://localhost:3000/images/' +
+                            message.profile_img_path
+                          : 'assets/default-profile.jpg'
+                      "
+                      alt="User Image"
+                    />
+                    <small>{{ message.username }}</small>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-bubble">
+                      {{ message.message }}
+                    </div>
+                    <div class="message-time">
+                      {{ message.timestamp | date : "h:mm a" }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Current User's Message -->
+                <div
+                  *ngIf="!message.system && message.userId === currentUser.id"
+                  class="message-row right"
+                >
+                  <div class="message-content">
+                    <div class="message-bubble mine">
+                      {{ message.message }}
+                    </div>
+                    <div class="message-time">
+                      {{ message.timestamp | date : "h:mm a" }}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <!-- 'Request to Join' button if user is not in the channel -->
+            <ng-template #requestToJoin>
+              <div
+                class="d-flex justify-content-center align-items-center h-100"
+              >
+                <button
+                  *ngIf="!isUserPendingApproval"
+                  class="btn btn-primary"
+                  (click)="requestToJoinChannel()"
+                >
+                  Request to Join Channel
+                </button>
+                <button
+                  *ngIf="isUserPendingApproval"
+                  class="btn btn-secondary"
+                  disabled
+                >
+                  Waiting for Approval
+                </button>
+              </div>
+            </ng-template>
           </div>
 
-          <!-- 'Request to Join' button if user is not in the channel -->
-          <ng-template #requestToJoin>
+          <!-- Empty state if no group or channel is selected -->
+          <ng-template #emptyState>
             <div class="d-flex justify-content-center align-items-center h-100">
-              <button
-                *ngIf="!isUserPendingApproval"
-                class="btn btn-primary"
-                (click)="requestToJoinChannel()"
-              >
-                Request to Join Channel
-              </button>
-
-              <button
-                *ngIf="isUserPendingApproval"
-                class="btn btn-secondary"
-                disabled
-              >
-                Waiting for Approval
-              </button>
+              <p>Select a group and channel to start chatting.</p>
             </div>
           </ng-template>
         </div>
 
+        <!-- Message Input Section -->
         <div *ngIf="isUserInChannel" class="p-3 border-top bg-dark">
           <div class="input-group">
             <input
