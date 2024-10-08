@@ -59,6 +59,12 @@
   max-width: 60%;
 }
 
+.image-preview img {
+  max-width: 150px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
 .message-bubble {
   max-width: 100%; /* Allow bubble to take full width but controlled by the row */
   padding: 10px;
@@ -187,4 +193,13 @@
   font-style: italic;
   color: #888;
   margin: 10px 0;
+}
+
+/* Ensure the request to join container takes up the full height */
+.request-to-join-container {
+  height: 100% !important; /* Full height of the available space */
+  justify-content: center; /* Vertically center the content */
+  align-items: center; /* Horizontally center the content */
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack the buttons vertically */
 }

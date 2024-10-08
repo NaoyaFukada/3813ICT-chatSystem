@@ -9,6 +9,8 @@ import { ChannelService } from '../services/channel.service';
 import { SocketService } from '../services/socket.service';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { ViewChild } from '@angular/core';
+import { ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-chat',
@@ -18,6 +20,8 @@ import { NgClass } from '@angular/common';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
   selectedGroup: Group | null = null;
   selectedChannel: any | null = null;
   currentUser: any;
@@ -27,6 +31,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   isUserPendingApproval: boolean = false;
   chatMessages: any[] = [];
   messageContent: string = '';
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
+  private BASE_URL = 'http://localhost:3000/images/';
 
   // Create a cache (map) to store userId -> { username, profile_img_path }
   userCache: { [key: string]: { username: string; profile_img_path: string } } =
@@ -192,18 +199,72 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Trigger the hidden file input when the icon is clicked
+  triggerFileUpload() {
+    this.fileInput.nativeElement.click();
+  }
+
+  // Handle image selection and create preview
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedImage = input.files[0];
+
+      // Create a preview of the selected image
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedImage);
+    }
+  }
+
+  clearImage() {
+    this.selectedImage = null;
+    this.imagePreview = null;
+    this.fileInput.nativeElement.value = ''; // Clear file input
+  }
+
   sendMessage() {
-    if (this.messageContent.trim() && this.selectedChannel) {
+    console.log('jajaja');
+    console.log(this.selectedImage);
+    if (this.selectedImage) {
+      // If an image is selected, upload it first
+      this.SocketService.uploadImage(this.selectedImage).subscribe(
+        (response) => {
+          console.log(response);
+          // Once the image is uploaded, send the message with the image URL
+          const imageUrl = response.imageUrl; // Assume server returns the image URL
+          const message = {
+            channelId: this.selectedChannel._id,
+            userId: this.currentUser.id,
+            message: this.messageContent.trim(),
+            imageUrl: imageUrl, // Include the image URL in the message object
+          };
+          this.SocketService.sendMessage(message); // Send message to the server
+          this.clearMessage(); // Clear the message input and image preview
+        },
+        (error) => {
+          console.error('Error uploading image:', error);
+        }
+      );
+    } else if (this.messageContent.trim() && this.selectedChannel) {
+      // If no image is selected, just send the text message
       const message = {
         channelId: this.selectedChannel._id,
         userId: this.currentUser.id,
         message: this.messageContent.trim(),
+        imageUrl: '',
       };
       this.SocketService.sendMessage(message);
-      this.messageContent = '';
-    } else {
-      console.log('No message to send or channel not selected.');
+      this.clearMessage();
     }
+  }
+
+  // Helper method to clear the message input and image preview
+  clearMessage() {
+    this.messageContent = '';
+    this.clearImage(); // Reset image input
   }
 
   // Helper method to check if two messages were sent on the same day

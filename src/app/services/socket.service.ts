@@ -28,8 +28,16 @@ export class SocketService {
     channelId: string;
     userId: string;
     message: string;
+    imageUrl: string;
   }): void {
     this.socket.emit('chatMessage', data);
+  }
+
+  // Method to upload the image
+  uploadImage(image: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', image);
+    return this.http.post<any>(`${this.URL}/upload-image`, formData); // Ensure this endpoint exists in your server
   }
 
   // Listen for incoming messages via Socket.IO

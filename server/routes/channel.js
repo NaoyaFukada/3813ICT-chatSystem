@@ -1,4 +1,6 @@
 const { ObjectId } = require("mongodb");
+const formidable = require("formidable");
+const path = require("path");
 
 module.exports = {
   route: (
@@ -362,6 +364,36 @@ module.exports = {
       } catch (error) {
         res.status(500).json({ message: "Failed to fetch messages", error });
       }
+    });
+
+    // Image Upload Route
+    app.post("/api/upload-image", (req, res) => {
+      const form = new formidable.IncomingForm({
+        uploadDir: "./uploads", // Directory where images will be stored
+        keepExtensions: true, // Keep the file extension
+      });
+
+      console.log("Form2:", form);
+
+      let newFileName = null;
+
+      form.on("fileBegin", (name, file) => {
+        const ext = path.extname(file.originalFilename).toLowerCase();
+        newFileName = `image_${Date.now()}${ext}`; // Unique filename
+        file.filepath = path.join(form.uploadDir, newFileName); // Set file path
+      });
+
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          return res.status(500).json({ message: "Error uploading file", err });
+        }
+
+        // Return the file path of the uploaded image
+        res.status(200).json({
+          message: "Image uploaded successfully",
+          imageUrl: `http://localhost:3000/uploads/${newFileName}`,
+        });
+      });
     });
   },
 };

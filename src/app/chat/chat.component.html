@@ -71,7 +71,10 @@
 
         <div class="flex-grow-1 p-3 overflow-auto">
           <!-- Check if a group and a channel are selected -->
-          <div *ngIf="selectedGroup && selectedChannel; else emptyState">
+          <div
+            *ngIf="selectedGroup && selectedChannel; else emptyState"
+            style="height: 100%"
+          >
             <!-- Chat Messages -->
             <div *ngIf="isUserInChannel; else requestToJoin">
               <div *ngFor="let message of chatMessages; let i = index">
@@ -96,7 +99,6 @@
                   *ngIf="!message.system && message.userId !== currentUser.id"
                   class="message-row left"
                 >
-                  <!-- Display Username and Profile Picture on the same row -->
                   <div class="message-info">
                     <img
                       class="profile-pic"
@@ -110,9 +112,22 @@
                     />
                     <small>{{ message.username }}</small>
                   </div>
+
+                  <!-- Message and Image -->
                   <div class="message-content">
-                    <div class="message-bubble">
+                    <!-- If message exists, display it in a bubble -->
+                    <div *ngIf="message.message.trim()" class="message-bubble">
                       {{ message.message }}
+                    </div>
+
+                    <!-- If image exists, display it outside of the bubble -->
+                    <div *ngIf="message.imageUrl" class="image-preview">
+                      <img
+                        [src]="message.imageUrl"
+                        alt="Sent Image"
+                        class="img-thumbnail me-2"
+                        style="max-width: 150px"
+                      />
                     </div>
                     <div class="message-time">
                       {{ message.timestamp | date : "h:mm a" }}
@@ -126,8 +141,22 @@
                   class="message-row right"
                 >
                   <div class="message-content">
-                    <div class="message-bubble mine">
+                    <!-- If message exists, display it in a bubble -->
+                    <div
+                      *ngIf="message.message.trim()"
+                      class="message-bubble mine"
+                    >
                       {{ message.message }}
+                    </div>
+
+                    <!-- If image exists, display it outside of the bubble -->
+                    <div *ngIf="message.imageUrl" class="image-preview">
+                      <img
+                        [src]="message.imageUrl"
+                        alt="Sent Image"
+                        class="img-thumbnail me-2"
+                        style="max-width: 150px"
+                      />
                     </div>
                     <div class="message-time">
                       {{ message.timestamp | date : "h:mm a" }}
@@ -136,11 +165,10 @@
                 </div>
               </div>
             </div>
-
             <!-- 'Request to Join' button if user is not in the channel -->
             <ng-template #requestToJoin>
               <div
-                class="d-flex justify-content-center align-items-center h-100"
+                class="d-flex justify-content-center align-items-center flex-column request-to-join-container"
               >
                 <button
                   *ngIf="!isUserPendingApproval"
@@ -178,6 +206,31 @@
               placeholder="Type a message..."
               style="border-right: none"
             />
+
+            <!-- Image Upload Button (Icon) -->
+            <div class="input-group-append mx-2">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="triggerFileUpload()"
+              >
+                <i
+                  class="fa-regular fa-image"
+                  style="font-size: 1.5rem; color: white"
+                ></i>
+              </button>
+            </div>
+
+            <!-- Hidden File Input -->
+            <input
+              type="file"
+              #fileInput
+              class="d-none"
+              accept="image/*"
+              name="selectedImage"
+              (change)="onImageSelected($event)"
+            />
+
             <button
               class="btn btn-primary rounded-pill"
               (click)="sendMessage()"
@@ -189,6 +242,20 @@
               "
             >
               Send
+            </button>
+          </div>
+
+          <!-- Image Preview -->
+          <div *ngIf="imagePreview">
+            <p>Selected Image:</p>
+            <img
+              [src]="imagePreview"
+              alt="Image preview"
+              class="img-thumbnail me-2"
+              style="max-width: 150px"
+            />
+            <button class="btn btn-danger" (click)="clearImage()">
+              Remove Image
             </button>
           </div>
         </div>

@@ -5,11 +5,12 @@ module.exports = {
 
       // Listen for chat messages and save them in MongoDB
       socket.on("chatMessage", async (data) => {
-        const { channelId, userId, message } = data;
+        const { channelId, userId, message, imageUrl } = data;
         const chatMessage = {
           channelId,
           userId,
           message,
+          imageUrl,
           timestamp: new Date(),
         };
         console.log("Chat Message", chatMessage);

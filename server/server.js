@@ -28,6 +28,7 @@ app.use(express.json());
 
 // Serve static files (uploaded images)
 app.use("/images", express.static(path.join(__dirname, "./userimages")));
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 
 // This will allow requests only from the frontend of this application
 var corsOptions = {
