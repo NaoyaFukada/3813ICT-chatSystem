@@ -4,9 +4,19 @@ const formidable = require("formidable");
 const cors = require("cors");
 const fs = require("fs");
 const app = express(); // Create an instance of Express
-const http = require("http").Server(app); // Create HTTP server
+const https = require("https");
+const { PeerServer } = require("peer");
+
+const sslOptions = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+};
+const httpsServer = https.createServer(sslOptions, app);
+
+// const http = require("http").Server(app); // Create HTTP server
 const PORT = 3000;
-const io = require("socket.io")(http, {
+const PORT1 = 3001;
+const io = require("socket.io")(httpsServer, {
   cors: {
     origin: "http://localhost:4200",
     methods: ["GET", "POST"],
@@ -75,8 +85,8 @@ async function main() {
     sockets.connect(io, chatHistoryCollection);
 
     // Start the server using http, not app
-    http.listen(PORT, () => {
-      console.log(`Server started on http://localhost:${PORT}`);
+    httpsServer.listen(PORT, () => {
+      console.log(`Server started on https://localhost:${PORT}`);
     });
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);

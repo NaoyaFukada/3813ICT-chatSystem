@@ -391,7 +391,7 @@ module.exports = {
         // Return the file path of the uploaded image
         res.status(200).json({
           message: "Image uploaded successfully",
-          imageUrl: `http://localhost:3000/uploads/${newFileName}`,
+          imageUrl: `https://localhost:3000/uploads/${newFileName}`,
         });
       });
     });

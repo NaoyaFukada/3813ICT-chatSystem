@@ -7,8 +7,8 @@ import io from 'socket.io-client';
   providedIn: 'root',
 })
 export class SocketService {
-  private URL = 'http://localhost:3000/api';
-  private SERVER_URL = 'http://localhost:3000';
+  private URL = 'https://localhost:3000/api';
+  private SERVER_URL = 'https://localhost:3000';
   private socket: any;
 
   constructor(private http: HttpClient) {}
