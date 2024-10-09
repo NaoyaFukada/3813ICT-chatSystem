@@ -11,6 +11,30 @@ import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { ViewChild } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { PeerService } from '../services/peer.service';
+
+interface VideoElement {
+  muted: boolean;
+  srcObject: MediaStream;
+  userId: string;
+}
+
+const gdmOptions = {
+  video: true,
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    sampleRate: 44100,
+  },
+};
+
+const gumOptions = {
+  audio: true,
+  video: {
+    width: { ideal: 640 },
+    height: { ideal: 360 },
+  },
+};
 
 @Component({
   selector: 'app-chat',
@@ -21,6 +45,7 @@ import { ElementRef } from '@angular/core';
 })
 export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('localVideo') localVideo!: ElementRef;
 
   selectedGroup: Group | null = null;
   selectedChannel: any | null = null;
@@ -33,9 +58,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   messageContent: string = '';
   selectedImage: File | null = null;
   imagePreview: string | null = null;
-  private BASE_URL = 'https://localhost:3000/images/';
+  remoteStreams: MediaStream[] = [];
+  isCallStarted = false;
 
-  // Create a cache (map) to store userId -> { username, profile_img_path }
   userCache: { [key: string]: { username: string; profile_img_path: string } } =
     {};
 
@@ -45,7 +70,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private UserService: UserService,
     private router: Router,
     private ChannelService: ChannelService,
-    private SocketService: SocketService
+    private SocketService: SocketService,
+    private PeerService: PeerService
   ) {}
 
   ngOnInit(): void {
@@ -58,7 +84,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.initSocketConnection();
   }
 
-  // Detect if the user closes the tab or navigates away
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler(event: Event) {
     if (this.selectedChannel) {
@@ -83,7 +108,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.groups = data.filter((group) =>
         group.users.includes(this.currentUser.id)
       );
-      // No automatic group/channel selection
       this.selectedGroup = null;
       this.selectedChannel = null;
     });
@@ -91,21 +115,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   selectGroup(groupId: string) {
     this.selectedGroup = this.groups.find((g) => g.id === groupId) || null;
-
     if (this.selectedGroup) {
       this.channels = [];
       this.selectedGroup.channels.forEach((channelId: string) => {
-        this.ChannelService.getChannelById(channelId).subscribe(
-          (channel) => {
-            this.channels.push(channel);
-          },
-          (error) => {
-            console.error(
-              `Error fetching channel with ID: ${channelId}`,
-              error
-            );
-          }
-        );
+        this.ChannelService.getChannelById(channelId).subscribe((channel) => {
+          this.channels.push(channel);
+        });
       });
       this.selectedChannel = null;
       this.isUserInChannel = false;
@@ -132,7 +147,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadChatMessages(channelId: string) {
     this.SocketService.getChatMessages(channelId).subscribe((messages) => {
       this.chatMessages = messages;
-      console.log(messages);
       this.chatMessages.forEach((msg) => {
         this.getUserInfo(msg.userId);
       });
@@ -140,23 +154,19 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   getUserInfo(userId: string) {
-    console.log('this.userCache', this.userCache);
     if (this.userCache[userId]) {
       this.chatMessages.forEach((msg) => {
         if (msg.userId === userId) {
-          console.log(this.userCache[userId].username);
           msg.username = this.userCache[userId].username;
           msg.profile_img_path = this.userCache[userId].profile_img_path;
         }
       });
     } else {
       this.UserService.getUserById(userId).subscribe((user) => {
-        console.log('THis is user', user);
         this.userCache[user.id] = {
           username: user.username,
           profile_img_path: user.profile_img_path,
         };
-
         this.chatMessages.forEach((msg) => {
           if (msg.userId === user.id) {
             msg.username = user.username;
@@ -171,16 +181,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.ChannelService.requestToJoinChannel(
       this.selectedChannel._id,
       this.currentUser.id
-    ).subscribe(
-      (response) => {
-        alert('Request sent to join the channel.');
-        this.isUserPendingApproval = true;
-      },
-      (error) => {
-        console.error('Error requesting to join the channel:', error);
-        alert('Failed to send request to join the channel.');
-      }
-    );
+    ).subscribe(() => {
+      this.isUserPendingApproval = true;
+    });
   }
 
   initSocketConnection() {
@@ -199,18 +202,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Trigger the hidden file input when the icon is clicked
   triggerFileUpload() {
     this.fileInput.nativeElement.click();
   }
 
-  // Handle image selection and create preview
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedImage = input.files[0];
-
-      // Create a preview of the selected image
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.imagePreview = e.target.result;
@@ -222,34 +221,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   clearImage() {
     this.selectedImage = null;
     this.imagePreview = null;
-    this.fileInput.nativeElement.value = ''; // Clear file input
+    this.fileInput.nativeElement.value = '';
   }
 
   sendMessage() {
-    console.log('jajaja');
-    console.log(this.selectedImage);
     if (this.selectedImage) {
-      // If an image is selected, upload it first
       this.SocketService.uploadImage(this.selectedImage).subscribe(
         (response) => {
-          console.log(response);
-          // Once the image is uploaded, send the message with the image URL
-          const imageUrl = response.imageUrl; // Assume server returns the image URL
+          const imageUrl = response.imageUrl;
           const message = {
             channelId: this.selectedChannel._id,
             userId: this.currentUser.id,
             message: this.messageContent.trim(),
-            imageUrl: imageUrl, // Include the image URL in the message object
+            imageUrl,
           };
-          this.SocketService.sendMessage(message); // Send message to the server
-          this.clearMessage(); // Clear the message input and image preview
-        },
-        (error) => {
-          console.error('Error uploading image:', error);
+          this.SocketService.sendMessage(message);
+          this.clearMessage();
         }
       );
     } else if (this.messageContent.trim() && this.selectedChannel) {
-      // If no image is selected, just send the text message
       const message = {
         channelId: this.selectedChannel._id,
         userId: this.currentUser.id,
@@ -261,16 +251,35 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Helper method to clear the message input and image preview
   clearMessage() {
     this.messageContent = '';
-    this.clearImage(); // Reset image input
+    this.clearImage();
   }
 
-  // Helper method to check if two messages were sent on the same day
   isSameDay(timestamp1: string, timestamp2: string): boolean {
     const date1 = new Date(timestamp1).toDateString();
     const date2 = new Date(timestamp2).toDateString();
     return date1 === date2;
+  }
+
+  // Video chat implementation
+  async streamCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      this.localVideo.nativeElement.srcObject = stream;
+      this.PeerService.addMyVideo(stream);
+      this.PeerService.callPeer(stream);
+      this.isCallStarted = true;
+    } catch (err) {
+      console.error('Error accessing the camera:', err);
+    }
+  }
+
+  endCall() {
+    this.PeerService.endCall();
+    this.isCallStarted = false;
   }
 }

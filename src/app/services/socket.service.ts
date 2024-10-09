@@ -10,12 +10,16 @@ export class SocketService {
   private URL = 'https://localhost:3000/api';
   private SERVER_URL = 'https://localhost:3000';
   private socket: any;
+  private peerSocket: any;
+  public socketId: any;
+  private PEER_SERVER = 'https://localhost:3001';
 
   constructor(private http: HttpClient) {}
 
   // Initialize Socket.IO
   public initSocket(): void {
     this.socket = io(this.SERVER_URL);
+    this.peerSocket = io(this.PEER_SERVER);
   }
 
   // Fetch chat messages for a channel
@@ -62,5 +66,17 @@ export class SocketService {
   // Leave a specific channel room and send username
   public leaveChannel(channelId: string, username: string): void {
     this.socket.emit('leaveChannel', { channelId, username });
+  }
+
+  peerID(message: string) {
+    this.socket.emit('PeerID', message);
+  }
+
+  getPeerID() {
+    return new Observable((observer) => {
+      this.socket.on('PeerID', (data: string) => {
+        observer.next(data);
+      });
+    });
   }
 }

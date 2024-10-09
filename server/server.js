@@ -88,6 +88,9 @@ async function main() {
     httpsServer.listen(PORT, () => {
       console.log(`Server started on https://localhost:${PORT}`);
     });
+
+    PeerServer({ port: PORT1, path: "/", ssl: sslOptions });
+    console.log(`Starting SSL PeerServer at: ${PORT1}`);
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
   }

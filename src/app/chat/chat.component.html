@@ -62,23 +62,29 @@
         class="flex-grow-1 d-flex flex-column bg-light text-dark"
         id="chat-area"
       >
-        <div class="p-3 border-bottom bg-dark text-white">
-          <h5>
+        <div
+          class="p-3 border-bottom bg-dark text-white d-flex justify-content-between align-items-center"
+        >
+          <h5 class="m-0">
             {{ selectedGroup?.groupname || "Select a group" }}
             {{ selectedChannel ? " - " + selectedChannel.name : "" }}
           </h5>
+          <!-- Video Call Icon -->
+          <button
+            class="btn btn-outline-light"
+            (click)="streamCamera()"
+            [disabled]="isCallStarted"
+          >
+            <i class="fa fa-video"></i> Start Video Call
+          </button>
         </div>
 
+        <!-- Chat Messages Section -->
         <div class="flex-grow-1 p-3 overflow-auto">
-          <!-- Check if a group and a channel are selected -->
-          <div
-            *ngIf="selectedGroup && selectedChannel; else emptyState"
-            style="height: 100%"
-          >
-            <!-- Chat Messages -->
+          <div *ngIf="selectedGroup && selectedChannel; else emptyState">
             <div *ngIf="isUserInChannel; else requestToJoin">
               <div *ngFor="let message of chatMessages; let i = index">
-                <!-- Show Date Divider -->
+                <!-- Date Divider -->
                 <div
                   *ngIf="
                     i === 0 ||
@@ -89,7 +95,7 @@
                   <em>{{ message.timestamp | date : "EEE, MMM d" }}</em>
                 </div>
 
-                <!-- System Message in the center -->
+                <!-- System Message -->
                 <div *ngIf="message.system" class="system-message text-center">
                   <em>{{ message.message }}</em>
                 </div>
@@ -103,24 +109,16 @@
                     <img
                       class="profile-pic"
                       [src]="
-                        message.profile_img_path
-                          ? 'https://localhost:3000/images/' +
-                            message.profile_img_path
-                          : 'assets/default-profile.jpg'
+                        message.profile_img_path || 'assets/default-profile.jpg'
                       "
                       alt="User Image"
                     />
                     <small>{{ message.username }}</small>
                   </div>
-
-                  <!-- Message and Image -->
                   <div class="message-content">
-                    <!-- If message exists, display it in a bubble -->
                     <div *ngIf="message.message.trim()" class="message-bubble">
                       {{ message.message }}
                     </div>
-
-                    <!-- If image exists, display it outside of the bubble -->
                     <div *ngIf="message.imageUrl" class="image-preview">
                       <img
                         [src]="message.imageUrl"
@@ -141,15 +139,12 @@
                   class="message-row right"
                 >
                   <div class="message-content">
-                    <!-- If message exists, display it in a bubble -->
                     <div
                       *ngIf="message.message.trim()"
                       class="message-bubble mine"
                     >
                       {{ message.message }}
                     </div>
-
-                    <!-- If image exists, display it outside of the bubble -->
                     <div *ngIf="message.imageUrl" class="image-preview">
                       <img
                         [src]="message.imageUrl"
@@ -165,7 +160,8 @@
                 </div>
               </div>
             </div>
-            <!-- 'Request to Join' button if user is not in the channel -->
+
+            <!-- Request to Join -->
             <ng-template #requestToJoin>
               <div
                 class="d-flex justify-content-center align-items-center flex-column request-to-join-container"
@@ -188,12 +184,35 @@
             </ng-template>
           </div>
 
-          <!-- Empty state if no group or channel is selected -->
+          <!-- Empty State -->
           <ng-template #emptyState>
             <div class="d-flex justify-content-center align-items-center h-100">
               <p>Select a group and channel to start chatting.</p>
             </div>
           </ng-template>
+        </div>
+
+        <!-- Video Chat Controls -->
+        <div class="video-chat-controls d-flex justify-content-center my-3">
+          <button (click)="streamCamera()" class="btn btn-primary mx-2">
+            Start Video Chat
+          </button>
+          <button (click)="endCall()" class="btn btn-danger mx-2">
+            End Call
+          </button>
+        </div>
+
+        <!-- Video Streams -->
+        <div class="video-container d-flex justify-content-center">
+          <!-- Local video stream -->
+          <video #localVideo autoplay muted class="video-thumbnail"></video>
+          <!-- Remote video streams -->
+          <video
+            *ngFor="let remoteStream of remoteStreams"
+            [srcObject]="remoteStream"
+            autoplay
+            class="video-thumbnail"
+          ></video>
         </div>
 
         <!-- Message Input Section -->
@@ -207,7 +226,7 @@
               style="border-right: none"
             />
 
-            <!-- Image Upload Button (Icon) -->
+            <!-- Image Upload Button -->
             <div class="input-group-append mx-2">
               <button
                 class="btn btn-outline-secondary"
@@ -231,15 +250,11 @@
               (change)="onImageSelected($event)"
             />
 
+            <!-- Send Button -->
             <button
               class="btn btn-primary rounded-pill"
               (click)="sendMessage()"
               type="button"
-              style="
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-                margin-left: 5px;
-              "
             >
               Send
             </button>
