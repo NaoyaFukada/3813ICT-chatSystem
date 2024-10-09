@@ -10,7 +10,7 @@ import { Group } from '../models/group.model';
 export class UserService {
   constructor(private http: HttpClient) {}
 
-  private URL = 'https://localhost:3000/api';
+  private URL = 'http://localhost:3000/api';
 
   // Get all users
   getUsers(): Observable<User[]> {

@@ -29,24 +29,37 @@ module.exports = {
 
     // Add a new group
     app.post("/api/groups", (req, res) => {
-      const newGroup = req.body;
-      console.log(newGroup);
+      try {
+        const newGroup = req.body;
 
-      // Add the new group to the groups list
-      groups.push(newGroup);
+        // Check if the necessary fields are provided
+        if (!newGroup.id || !newGroup.groupname || !newGroup.adminId) {
+          return res
+            .status(400)
+            .json({ message: "Required fields: id, groupname, adminId" });
+        }
 
-      // Find the admin in the users list and update their groups array
-      const adminUser = users.find((user) => user.id === newGroup.adminId);
-      if (adminUser) {
-        adminUser.groups.push(newGroup.id);
+        // Add the new group to the groups list
+        groups.push(newGroup);
+
+        // Find the admin in the users list and update their groups array
+        const adminUser = users.find((user) => user.id === newGroup.adminId);
+        if (adminUser) {
+          adminUser.groups.push(newGroup.id);
+        }
+
+        // Save the updated groups and users lists
+        saveGroups(groups);
+        saveUsers(users);
+
+        // Respond with the newly created group
+        res.status(201).json(newGroup);
+      } catch (err) {
+        // Handle potential errors
+        res
+          .status(500)
+          .json({ message: "Error occurred while creating the group" });
       }
-
-      // Save the updated groups and users lists to their respective JSON files
-      saveGroups(groups);
-      saveUsers(users);
-
-      // Respond with the newly created group
-      res.status(201).json(newGroup);
     });
 
     // Update a group name
@@ -177,6 +190,7 @@ module.exports = {
         user.interest_groups = user.interest_groups.filter(
           (id) => id !== groupId
         );
+        console.log(user);
         saveGroups(groups);
         saveUsers(users);
         res.status(200).json(group);
@@ -191,7 +205,7 @@ module.exports = {
 
       const group = groups.find((group) => group.id === groupId);
 
-      console.log(group);
+      // console.log(group);
 
       if (group) {
         group.adminId = "super";
@@ -230,9 +244,9 @@ module.exports = {
         saveGroups(groups);
         saveUsers(users);
 
-        console.log(
-          `User ${user.username} has been reported to the Super Admin in group ${groupId}`
-        );
+        // console.log(
+        //   `User ${user.username} has been reported to the Super Admin in group ${groupId}`
+        // );
 
         res.status(200).json(group);
       } else {

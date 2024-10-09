@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit {
   private originalUsername: string = '';
   private originalEmail: string = '';
   private originalProfilePictureUrl: string = ''; // Store original profile picture URL
-  private BASE_URL = 'https://localhost:3000/images/';
+  private BASE_URL = 'http://localhost:3000/images/';
 
   constructor(
     private AuthService: AuthService,

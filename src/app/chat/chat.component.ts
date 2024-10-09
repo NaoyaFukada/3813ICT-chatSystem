@@ -33,7 +33,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   messageContent: string = '';
   selectedImage: File | null = null;
   imagePreview: string | null = null;
-  private BASE_URL = 'https://localhost:3000/images/';
+  private BASE_URL = 'http://localhost:3000/images/';
 
   // Create a cache (map) to store userId -> { username, profile_img_path }
   userCache: { [key: string]: { username: string; profile_img_path: string } } =

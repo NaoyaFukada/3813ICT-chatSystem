@@ -32,6 +32,7 @@ Use mongosh on terminal
 mongosh
 use chatApp
 db.channels.find();
+db.testChannels.find();
 db.chatHistory.find();
 db.channels.deleteMany({})
 ```

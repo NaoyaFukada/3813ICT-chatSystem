@@ -8,7 +8,7 @@ import { Group } from '../models/group.model';
   providedIn: 'root',
 })
 export class ChannelService {
-  private URL = 'https://localhost:3000/api';
+  private URL = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 

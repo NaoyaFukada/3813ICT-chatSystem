@@ -30,10 +30,11 @@ module.exports = {
         if (channel) {
           res.status(200).json(channel);
         } else {
-          console.log(ObjectId(id));
+          // Log for debugging
           res.status(404).json({ message: "Channel not found" });
         }
       } catch (err) {
+        console.error("Error in /GET /api/channels/:id", err); // Log the error
         res.status(500).json({ message: "Server error", error: err });
       }
     });
@@ -62,7 +63,7 @@ module.exports = {
           group.channels.push(newChannel._id.toString());
           saveGroups(groups); // Save the updated group data
 
-          console.log(users);
+          // console.log(users);
           // Update the user who created the channel (first user in the 'users' array)
           users.forEach((user) => {
             if (newChannel.channelUsers.includes(user.id)) {
@@ -263,7 +264,7 @@ module.exports = {
           return res.status(404).json({ message: "Channel not found" });
         }
 
-        // Find the user in the `users` array (assuming this is an in-memory array or you may need to fetch from DB)
+        // Find the user in the `users` array
         const user = users.find((user) => user.id === userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -283,13 +284,15 @@ module.exports = {
           (ch) => ch !== channelId
         );
 
-        // Save the updated user (assuming saveUsers persists the changes to the database)
-        await saveUsers(users); // Ensure that saveUsers actually updates the database
+        // Save the updated user
+        await saveUsers(users);
 
-        // Respond with the updated user
-        return res.status(200).json({ user });
+        // Respond with the updated user and success message
+        return res.status(200).json({
+          message: "User request to join channel declined",
+          user,
+        });
       } catch (err) {
-        // Handle potential errors
         console.error("Error declining user:", err);
         return res
           .status(500)
@@ -359,7 +362,7 @@ module.exports = {
         const messages = await chatHistoryCollection
           .find({ channelId: channelId })
           .toArray();
-        console.log(messages);
+        // console.log(messages);
         res.status(200).json(messages);
       } catch (error) {
         res.status(500).json({ message: "Failed to fetch messages", error });
@@ -372,8 +375,6 @@ module.exports = {
         uploadDir: "./uploads", // Directory where images will be stored
         keepExtensions: true, // Keep the file extension
       });
-
-      console.log("Form2:", form);
 
       let newFileName = null;
 
@@ -391,7 +392,7 @@ module.exports = {
         // Return the file path of the uploaded image
         res.status(200).json({
           message: "Image uploaded successfully",
-          imageUrl: `https://localhost:3000/uploads/${newFileName}`,
+          imageUrl: `http://localhost:3000/uploads/${newFileName}`,
         });
       });
     });
