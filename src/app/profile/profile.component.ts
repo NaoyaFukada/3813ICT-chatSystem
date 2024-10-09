@@ -94,6 +94,7 @@ export class ProfileComponent implements OnInit {
       const existingUser = users.find(
         (u) => u.username === this.username && u.id !== this.user.id
       );
+      console.log(existingUser);
       if (existingUser) {
         alert('Username already exists. Please choose a different one.');
         isValid = false;

@@ -1,8 +1,8 @@
 [
   {
     "id": "user-rv4uafl3dt",
-    "username": "super",
-    "email": "super@gmail.com",
+    "username": "a",
+    "email": "super#icloud.com",
     "password": "123",
     "roles": [
       "Super Admin"
@@ -12,7 +12,9 @@
       "group-4bd7is8w7ns"
     ],
     "interest_groups": [],
-    "channels": [],
+    "channels": [
+      "670678d5c68849f6f3d3ada4"
+    ],
     "interest_channels": [],
     "banned_channels": [],
     "reported_in_groups": []
@@ -48,7 +50,9 @@
       "group-vht97jcuqy8"
     ],
     "interest_groups": [],
-    "channels": [],
+    "channels": [
+      "670678d5c68849f6f3d3ada4"
+    ],
     "interest_channels": [
       "67048ebdaafc60768bcedcf6"
     ],

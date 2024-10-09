@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserManegementComponent } from './user-manegement.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('UserManegementComponent', () => {
   let component: UserManegementComponent;
@@ -8,10 +9,9 @@ describe('UserManegementComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserManegementComponent]
-    })
-    .compileComponents();
-    
+      imports: [UserManegementComponent, HttpClientTestingModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(UserManegementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

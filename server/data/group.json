@@ -3,7 +3,9 @@
     "id": "group-vht97jcuqy8",
     "groupname": "New Group",
     "adminId": "user-rv4uafl3dt",
-    "channels": [],
+    "channels": [
+      "670678d5c68849f6f3d3ada4"
+    ],
     "users": [
       "user-rv4uafl3dt",
       "user-x587q5gd7hd",

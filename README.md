@@ -10,11 +10,13 @@ Naoya Fukada (s5315403)
 
 - **Feature Branches:** For each main page component, a dedicated feature branch is created and named descriptively to reflect the feature it represents. These branches include both frontend and backend parts. Feature branches used in this project include `feature-admin`, `feature-profile`, `feature-chat`, `feature-explore`, `feature-signup`, and `feature-login`. Each feature branch is independently developed and tested before being merged back into the main branch, enabling more manageable development and reducing the risk of introducing bugs into the production code.
 
+- **Local Branch:** During the second phase of development, a separate branch called 'local' was created to implement MongoDB and Socket.io for real-time communication. This branch was used to ensure that new features could be developed and tested without impacting the stability of the main branch. By isolating the new code in 'local', we minimized the risk of breaking existing functionality in the main branch.
+
 ### Update Frequency
 
 - **Commits:** Frequent commits are made to feature branches, ideally after each significant change, such as creating a frontend component or implementing backend logic. Commits are also made after fixing any bugs that are found.
 
-- **Merging:** Feature branches are merged into the main branch only after thorough testing.
+- **Merging:** Feature and local branches are merged into the main branch only after thorough testing.
 
 ## 2. Data Structures
 
@@ -291,8 +293,44 @@ For this project, both custom and core modules are used.
   - **Parameters:** `channelId`, `userId`.
   - **Return:** Success message indicating that the request to join has been registered, along with the updated channel and user objects.
 
+- **GET /api/channels/:channelId/messages:** Retrieves the chat history for a specific channel.
+
+  - **Parameters**: channelId
+
+  - **Return**: A list of messages for the specified channel.
+
+- **GET /api/upload-image**: Uploads an image to the server and returns the file path where the image is stored.
+
+  - **Return**: The URL of the uploaded image.
+
 ### Login Routes
 
 - **POST /api/auth:** Checks user’s credentials.
   - **Parameters:** `username`, `password`.
   - **Return:** Logged in user info.
+
+## 6. Client-Server Architecture
+
+In this project, the responsibilities are divided between the client (Angular frontend) and the server (Node.js backend):
+
+- **Client (Frontend)**: The Angular frontend is responsible for displaying the user interface, managing the application’s components, handling user interactions, and making HTTP requests to the server. It interacts with the server by consuming the REST API, which returns JSON data. This data is used to update the interface dynamically, such as loading user or group information.
+
+- **Server (Backend)**: The Node.js backend is responsible for handling the business logic, interacting with the database (MongoDB and JSON files), and providing the REST API endpoints that the client uses. The server processes incoming requests from the client, performs operations such as creating or updating records, and returns the requested data in JSON format. The server also manages user authentication and access control, ensuring secure communication between the frontend and backend.
+
+This clear separation of concerns ensures that the frontend focuses on rendering the user interface and managing user interactions, while the backend handles data storage, business logic, and security.
+
+## 7. Testing
+
+### Integration Testing for Backend Routes
+
+```bash
+npm run-script test-group
+npm run-script test-channel
+npm run-script test-user
+```
+
+### Unit Testing for Frontend
+
+```bash
+ng test
+```
